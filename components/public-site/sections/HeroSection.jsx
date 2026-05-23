@@ -3,12 +3,10 @@ import { ButtonLink, SectionBadge } from "../ui";
 import { safeArray } from "../utils";
 
 export default function HeroSection({ hero }) {
-  const style = {
-    backgroundImage: `linear-gradient(90deg, rgba(5,8,7,.98) 0%, rgba(5,8,7,.76) 48%, rgba(5,8,7,.25) 100%), url(${hero?.backgroundImage || ""})`
-  };
-
   return (
-    <section id="home" className="relative flex min-h-[calc(100vh-76px)] items-center overflow-hidden bg-cover bg-center" style={style}>
+    <section id="home" className="relative flex min-h-[calc(100vh-76px)] items-center overflow-hidden bg-black">
+      {hero?.backgroundImage && <img src={hero.backgroundImage} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover opacity-45" />}
+      <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/20" />
       <div className="pointer-events-none absolute inset-x-[-10%] bottom-[-20%] h-80 bg-gradient-to-b from-transparent to-pitch" />
       <div className="relative mx-auto grid w-[min(1140px,calc(100%-32px))] items-center gap-12 py-16 lg:grid-cols-[1.05fr_.95fr]">
         <div className="text-center lg:text-start">
@@ -19,8 +17,8 @@ export default function HeroSection({ hero }) {
           </h1>
           <p className="mx-auto mb-8 max-w-2xl text-lg leading-9 text-white/80 lg:mx-0">{hero?.summary}</p>
           <div className="mb-8 flex flex-wrap justify-center gap-4 lg:justify-start">
-            <ButtonLink href={hero?.primaryButtonUrl} download>{hero?.primaryButtonText || "تحميل الـ CV"}</ButtonLink>
-            <ButtonLink href={hero?.secondaryButtonUrl} variant="secondary">{hero?.secondaryButtonText || "تواصل مباشر"}</ButtonLink>
+            {hero?.primaryButtonUrl && <ButtonLink href="/api/download/cv" download>{hero?.primaryButtonText || "تحميل الـ CV"}</ButtonLink>}
+            <ButtonLink href={hero?.secondaryButtonUrl || "#contact"} variant="secondary">{hero?.secondaryButtonText || "تواصل مباشر"}</ButtonLink>
           </div>
           <div className="mx-auto grid max-w-2xl gap-3 md:grid-cols-3 lg:mx-0">
             {safeArray(hero?.quickInfo).map((item, index) => (

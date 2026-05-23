@@ -12,7 +12,7 @@ export default function OverviewTab({ content, update, addItem, removeItem }) {
         <Field label="Title" value={content.overview?.title} onChange={(v) => update(["overview", "title"], v)} />
       </div>
       <TextArea label="Summary" value={content.overview?.summary} onChange={(v) => update(["overview", "summary"], v)} />
-      <ImageUpload label="Profile Image" value={content.overview?.image} onChange={(v) => update(["overview", "image"], v)} />
+      <ImageUpload label="Profile Image" value={content.overview?.image} onChange={(v) => update(["overview", "image"], v, { autoSave: true })} />
       <ArrayBox title="Profile Rows" items={content.overview?.rows} addLabel="Row" onAdd={() => addItem(["overview", "rows"], { label: "بيان", value: "قيمة" })}>
         {safeArray(content.overview?.rows).map((row, index) => (
           <ItemShell key={index} title={`Row ${index + 1}`} onRemove={() => removeItem(["overview", "rows"], index)}>

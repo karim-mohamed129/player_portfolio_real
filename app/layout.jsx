@@ -6,7 +6,12 @@ config.autoAddCss = false;
 
 export const metadata = {
   title: "Football Player Portfolio",
-  description: "Dynamic football player portfolio with admin dashboard."
+  description: "Dynamic football player portfolio with admin dashboard.",
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg"
+  }
 };
 
 export default function RootLayout({ children }) {

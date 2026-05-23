@@ -11,7 +11,7 @@ export default function SkillsTab({ content, update, addItem, removeItem }) {
         <Field label="Label" value={content.skills?.label} onChange={(v) => update(["skills", "label"], v)} />
         <Field label="Title" value={content.skills?.title} onChange={(v) => update(["skills", "title"], v)} />
       </div>
-      <ImageUpload label="Skills Image" value={content.skills?.image} onChange={(v) => update(["skills", "image"], v)} />
+      <ImageUpload label="Skills Image" value={content.skills?.image} onChange={(v) => update(["skills", "image"], v, { autoSave: true })} />
       <ArrayBox title="Skills" items={content.skills?.items} addLabel="Skill" onAdd={() => addItem(["skills", "items"], { label: "مهارة", percent: 80 })}>
         {safeArray(content.skills?.items).map((item, index) => (
           <ItemShell key={index} title={`Skill ${index + 1}`} onRemove={() => removeItem(["skills", "items"], index)}>

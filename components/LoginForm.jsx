@@ -4,11 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import FaIcon from "./icons/FaIcon";
 import { IconCircle } from "./public-site/ui";
+import SecurityTurnstile from "./SecurityTurnstile";
 
 export default function LoginForm() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -21,7 +23,7 @@ export default function LoginForm() {
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password, turnstileToken })
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Login failed");
@@ -53,6 +55,7 @@ export default function LoginForm() {
             <span className="label-dark">Password</span>
             <input className="input-dark" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required />
           </label>
+          <SecurityTurnstile onToken={setTurnstileToken} />
           <button className="btn-red w-full" disabled={loading}>
             <span className="inline-flex items-center justify-center gap-2">
               <FaIcon name="login" className="h-4 w-4" />

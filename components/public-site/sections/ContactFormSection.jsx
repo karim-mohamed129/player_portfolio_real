@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import FaIcon from "../../icons/FaIcon";
+import SecurityTurnstile from "../../SecurityTurnstile";
 import { SectionBadge } from "../ui";
 
 export default function ContactFormSection({ contact }) {
-  const [form, setForm] = useState({ name: "", email: "", phone: "", subject: "", message: "" });
+  const [form, setForm] = useState({ name: "", email: "", phone: "", subject: "", message: "", companyWebsite: "" });
+  const [turnstileToken, setTurnstileToken] = useState("");
   const [status, setStatus] = useState({ type: "", text: "" });
   const [loading, setLoading] = useState(false);
 
@@ -22,7 +24,7 @@ export default function ContactFormSection({ contact }) {
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form)
+        body: JSON.stringify({ ...form, turnstileToken })
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "حدث خطأ أثناء إرسال الرسالة");
@@ -30,7 +32,8 @@ export default function ContactFormSection({ contact }) {
         type: "success",
         text: "تم حفظ الرسالة داخل لوحة التحكم بنجاح. يمكنك مراجعتها من قسم الرسائل."
       });
-      setForm({ name: "", email: "", phone: "", subject: "", message: "" });
+      setForm({ name: "", email: "", phone: "", subject: "", message: "", companyWebsite: "" });
+      setTurnstileToken("");
     } catch (error) {
       setStatus({ type: "error", text: error.message });
     } finally {
@@ -52,6 +55,7 @@ export default function ContactFormSection({ contact }) {
           </div>
 
           <form onSubmit={submit} className="grid gap-4">
+            <input type="text" name="companyWebsite" value={form.companyWebsite} onChange={updateField} className="hidden" tabIndex={-1} autoComplete="off" aria-hidden="true" />
             <div className="grid gap-4 md:grid-cols-2">
               <label>
                 <span className="label-dark">الاسم بالكامل</span>
@@ -74,6 +78,7 @@ export default function ContactFormSection({ contact }) {
               <span className="label-dark">الرسالة</span>
               <textarea className="input-dark min-h-36 resize-y" name="message" value={form.message} onChange={updateField} placeholder="اكتب رسالتك هنا..." required />
             </label>
+            <SecurityTurnstile onToken={setTurnstileToken} />
             <button className="btn-red w-fit min-w-44" disabled={loading}>
               <span className="inline-flex items-center gap-2">
                 <FaIcon name="send" className="h-4 w-4" />

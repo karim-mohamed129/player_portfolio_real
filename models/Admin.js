@@ -2,10 +2,10 @@ import mongoose from "mongoose";
 
 const AdminSchema = new mongoose.Schema(
   {
-    name: { type: String, default: "Admin" },
-    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    name: { type: String, default: "Admin", trim: true, maxlength: 100 },
+    email: { type: String, required: true, unique: true, lowercase: true, trim: true, maxlength: 120 },
     passwordHash: { type: String, required: true },
-    role: { type: String, default: "super_admin" },
+    role: { type: String, enum: ["super_admin"], default: "super_admin" },
     active: { type: Boolean, default: true },
     lastLoginAt: { type: Date }
   },

@@ -9,12 +9,14 @@ import AchievementsSection from "./sections/AchievementsSection";
 import MediaSection from "./sections/MediaSection";
 import ContactSection from "./sections/ContactSection";
 import ContactFormSection from "./sections/ContactFormSection";
+import SiteFavicon from "./SiteFavicon";
 
 export default function PublicSite({ initialContent }) {
   const content = initialContent || {};
 
   return (
     <main className="min-h-screen text-white">
+      <SiteFavicon href={content.site?.faviconUrl} />
       <Header site={content.site} nav={content.nav} />
       <HeroSection hero={content.hero} />
       <OverviewSection overview={content.overview} />

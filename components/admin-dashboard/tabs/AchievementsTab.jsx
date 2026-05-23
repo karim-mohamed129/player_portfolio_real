@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrayBox, Field, IconNameHelp, ImageUpload, ItemShell, TextArea } from "../AdminFields";
+import { ArrayBox, Field, IconField, ImageUpload, ItemShell, TextArea } from "../AdminFields";
 import { safeArray } from "../utils";
 
 export default function AchievementsTab({ content, update, addItem, removeItem }) {
@@ -15,14 +15,11 @@ export default function AchievementsTab({ content, update, addItem, removeItem }
         {safeArray(content.achievements?.items).map((item, index) => (
           <ItemShell key={index} title={item.title || `Achievement ${index + 1}`} onRemove={() => removeItem(["achievements", "items"], index)}>
             <div className="grid gap-4 md:grid-cols-2">
-              <div>
-                <Field label="Font Awesome Icon" value={item.icon} onChange={(v) => update(["achievements", "items", index, "icon"], v)} dir="ltr" />
-                <IconNameHelp />
-              </div>
+              <IconField value={item.icon} onChange={(v) => update(["achievements", "items", index, "icon"], v)} />
               <Field label="Title" value={item.title} onChange={(v) => update(["achievements", "items", index, "title"], v)} />
             </div>
             <TextArea label="Description" value={item.description} onChange={(v) => update(["achievements", "items", index, "description"], v)} />
-            <ImageUpload label="Image" value={item.image} onChange={(v) => update(["achievements", "items", index, "image"], v)} />
+            <ImageUpload label="Image" value={item.image} onChange={(v) => update(["achievements", "items", index, "image"], v, { autoSave: true })} />
           </ItemShell>
         ))}
       </ArrayBox>

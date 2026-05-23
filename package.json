@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start -p 9682",
     "lint": "next lint",
-    "seed": "echo \"Content is seeded automatically on first admin login.\""
+    "seed": "echo \"Content is seeded automatically on first admin login.\"",
+    "security:audit": "npm audit --audit-level=high"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.2.0",
@@ -19,13 +20,15 @@
     "jose": "^5.9.6",
     "mongoose": "^8.9.5",
     "next": "^15.3.4",
-    "nodemailer": "^6.9.16",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
-    "postcss": "^8.4.49",
+    "postcss": "^8.5.10",
     "tailwindcss": "^3.4.17"
+  },
+  "overrides": {
+    "postcss": "$postcss"
   }
 }

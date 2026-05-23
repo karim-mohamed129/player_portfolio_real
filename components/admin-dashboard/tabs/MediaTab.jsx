@@ -16,7 +16,7 @@ export default function MediaTab({ content, update, addItem, removeItem }) {
         {safeArray(content.media?.items).map((item, index) => (
           <ItemShell key={index} title={`Image ${index + 1}`} onRemove={() => removeItem(["media", "items"], index)}>
             <Field label="Alt Text" value={item.alt} onChange={(v) => update(["media", "items", index, "alt"], v)} />
-            <ImageUpload label="Image" value={item.image} onChange={(v) => update(["media", "items", index, "image"], v)} />
+            <ImageUpload label="Image" value={item.image} onChange={(v) => update(["media", "items", index, "image"], v, { autoSave: true })} />
           </ItemShell>
         ))}
       </ArrayBox>

@@ -5,9 +5,15 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata() {
   const content = await getPublicContent();
+  const faviconUrl = content?.site?.faviconUrl || "/favicon.svg";
   return {
     title: content?.site?.title || "Football Player Portfolio",
-    description: content?.site?.description || "Professional player portfolio"
+    description: content?.site?.description || "Professional player portfolio",
+    icons: {
+      icon: faviconUrl,
+      shortcut: faviconUrl,
+      apple: faviconUrl
+    }
   };
 }
 

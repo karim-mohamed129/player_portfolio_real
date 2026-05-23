@@ -19,7 +19,7 @@ export default function CareerTab({ content, update, addItem, removeItem }) {
               <Field label="Title" value={item.title} onChange={(v) => update(["career", "items", index, "title"], v)} />
             </div>
             <TextArea label="Description" value={item.description} onChange={(v) => update(["career", "items", index, "description"], v)} />
-            <ImageUpload label="Image" value={item.image} onChange={(v) => update(["career", "items", index, "image"], v)} />
+            <ImageUpload label="Image" value={item.image} onChange={(v) => update(["career", "items", index, "image"], v, { autoSave: true })} />
           </ItemShell>
         ))}
       </ArrayBox>
