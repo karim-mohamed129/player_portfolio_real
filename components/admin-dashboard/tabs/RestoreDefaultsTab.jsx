@@ -22,7 +22,7 @@ export default function RestoreDefaultsTab({ restoring, onRestoreDefaults }) {
           </span>
           <div>
             <h3 className="text-xl font-black text-white">ما الذي سيحدث عند استعادة الافتراضي؟</h3>
-            <p className="text-sm leading-7 text-white/60">هذا القسم مخصص لإرجاع الموقع كما ظهر أول مرة قبل أي تعديلات محفوظة من الداشبورد.</p>
+            <p className="text-sm leading-7 text-white/60">هذا القسم مخصص لإرجاع محتوى الموقع كما ظهر أول مرة قبل أي تعديلات محفوظة.</p>
           </div>
         </div>
 
@@ -36,8 +36,8 @@ export default function RestoreDefaultsTab({ restoring, onRestoreDefaults }) {
             <p className="text-sm leading-7 text-white/65">رسائل العملاء الموجودة في تبويب الرسائل وحساب الأدمن لن يتم حذفهم عند تطبيق الاستعادة.</p>
           </div>
           <div className="rounded-3xl border border-white/10 bg-black/20 p-4">
-            <h4 className="mb-2 font-black text-white">الصور و Cloudinary</h4>
-            <p className="text-sm leading-7 text-white/65">بعد رجوع المحتوى الافتراضي، سيتم تنظيف الصور غير المستخدمة من Cloudinary حتى لا تفضل صور بدون رابط محفوظ في قاعدة البيانات.</p>
+            <h4 className="mb-2 font-black text-white">الصور والملفات</h4>
+            <p className="text-sm leading-7 text-white/65">بعد رجوع المحتوى الافتراضي، سيتم تنظيف الصور غير المستخدمة حتى لا تبقى ملفات غير مرتبطة بالموقع.</p>
           </div>
           <div className="rounded-3xl border border-white/10 bg-black/20 p-4">
             <h4 className="mb-2 font-black text-white">قبل التنفيذ</h4>
@@ -53,13 +53,13 @@ export default function RestoreDefaultsTab({ restoring, onRestoreDefaults }) {
           </span>
           <div>
             <h3 className="text-xl font-black">تنبيه مهم قبل التطبيق</h3>
-            <p className="text-sm leading-7 text-red-100/75">أي تعديلات محفوظة في الداشبورد سيتم استبدالها بالإعدادات الافتراضية.</p>
+            <p className="text-sm leading-7 text-red-100/75">أي تعديلات محفوظة حالياً سيتم استبدالها بمحتوى البداية الافتراضي.</p>
           </div>
         </div>
         <ul className="grid gap-2 text-sm leading-7 text-white/70">
           <li>• هذه العملية لا يمكن التراجع عنها بزر واحد بعد التنفيذ، لكن تقدر تعدل المحتوى يدويًا مرة أخرى من التابات.</li>
           <li>• الرسائل الموجودة في قسم الرسائل لن يتم حذفها.</li>
-          <li>• الصور التي أصبحت غير مستخدمة سيتم تنظيفها من Cloudinary عند تطبيق الاستعادة.</li>
+          <li>• الصور التي أصبحت غير مستخدمة سيتم تنظيفها عند تطبيق الاستعادة.</li>
           <li>• بعد الاستعادة يمكنك تعديل المحتوى مرة أخرى والضغط على حفظ التعديلات.</li>
         </ul>
       </div>
@@ -89,7 +89,7 @@ export default function RestoreDefaultsTab({ restoring, onRestoreDefaults }) {
               </div>
             </div>
             <p className="mb-6 leading-8 text-white/70">
-              سيتم رجوع الموقع كما كان أول مرة، وسيتم حذف الصور غير المستخدمة من Cloudinary بعد التحديث.
+              سيتم رجوع الموقع كما كان أول مرة، وسيتم تنظيف الصور غير المستخدمة بعد التحديث.
             </p>
             <div className="flex flex-wrap justify-end gap-3">
               <button type="button" className="btn-muted" onClick={() => setConfirmOpen(false)} disabled={restoring}>إلغاء</button>

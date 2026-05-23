@@ -4,7 +4,6 @@ import { connectDB } from "@/lib/db";
 import Message from "@/models/Message";
 import { requireApiAdmin } from "@/lib/auth";
 import { requireJsonRequest, safeErrorResponse } from "@/lib/security";
-import { writeAuditLog } from "@/lib/audit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -22,19 +21,18 @@ export async function PATCH(request, { params }) {
 
   try {
     const { id } = await params;
-    if (!validateId(id)) return NextResponse.json({ error: "Invalid message id." }, { status: 400 });
+    if (!validateId(id)) return NextResponse.json({ error: "تعذر تحديد الرسالة المطلوبة." }, { status: 400 });
 
     const { status } = await request.json();
     if (!["new", "read"].includes(status)) {
-      return NextResponse.json({ error: "Invalid status." }, { status: 400 });
+      return NextResponse.json({ error: "حالة الرسالة غير صحيحة." }, { status: 400 });
     }
     await connectDB();
     const message = await Message.findByIdAndUpdate(id, { status }, { new: true, runValidators: true }).lean();
-    if (!message) return NextResponse.json({ error: "Message not found." }, { status: 404 });
-    await writeAuditLog({ request, admin, action: "message.status", target: String(id), status: "success", details: { newStatus: status } });
+    if (!message) return NextResponse.json({ error: "الرسالة غير موجودة." }, { status: 404 });
     return NextResponse.json({ message: JSON.parse(JSON.stringify(message)) });
   } catch (error) {
-    return safeErrorResponse(error, "Message could not be updated.", 500);
+    return safeErrorResponse(error, "تعذر تحديث الرسالة حالياً.", 500);
   }
 }
 
@@ -44,14 +42,13 @@ export async function DELETE(request, { params }) {
 
   try {
     const { id } = await params;
-    if (!validateId(id)) return NextResponse.json({ error: "Invalid message id." }, { status: 400 });
+    if (!validateId(id)) return NextResponse.json({ error: "تعذر تحديد الرسالة المطلوبة." }, { status: 400 });
 
     await connectDB();
     const message = await Message.findByIdAndDelete(id).lean();
-    if (!message) return NextResponse.json({ error: "Message not found." }, { status: 404 });
-    await writeAuditLog({ request, admin, action: "message.delete", target: String(id), status: "success", details: { subject: message.subject } });
+    if (!message) return NextResponse.json({ error: "الرسالة غير موجودة." }, { status: 404 });
     return NextResponse.json({ ok: true });
   } catch (error) {
-    return safeErrorResponse(error, "Message could not be deleted.", 500);
+    return safeErrorResponse(error, "تعذر حذف الرسالة حالياً.", 500);
   }
 }

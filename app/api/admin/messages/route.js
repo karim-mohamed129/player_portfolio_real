@@ -16,6 +16,6 @@ export async function GET(request) {
     const messages = await Message.find({}).sort({ createdAt: -1 }).limit(200).lean();
     return NextResponse.json({ messages: JSON.parse(JSON.stringify(messages)) });
   } catch (error) {
-    return safeErrorResponse(error, "Messages could not be loaded.", 500);
+    return safeErrorResponse(error, "تعذر تحميل الرسائل حالياً.", 500);
   }
 }

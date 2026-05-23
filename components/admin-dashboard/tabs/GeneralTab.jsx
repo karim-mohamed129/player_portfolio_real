@@ -28,7 +28,7 @@ export default function GeneralTab({ content, update, confirmAction }) {
 
       <div className="grid gap-4 md:grid-cols-2">
         <Field label="عنوان الصفحة" value={content.site?.title} onChange={(v) => update(["site", "title"], v)} />
-        <Field label="Logo Text" value={content.site?.logoText} onChange={(v) => update(["site", "logoText"], v)} dir="ltr" />
+        <Field label="اسم الشعار" value={content.site?.logoText} onChange={(v) => update(["site", "logoText"], v)} dir="ltr" />
       </div>
 
       <ImageUpload label="صورة اللوجو في القائمة العلوية" value={content.site?.logoImage || "/logo-mark.svg"} onChange={(v) => update(["site", "logoImage"], v || "/logo-mark.svg", { autoSave: true })} />

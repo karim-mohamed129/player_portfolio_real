@@ -5,8 +5,8 @@ import "./globals.css";
 config.autoAddCss = false;
 
 export const metadata = {
-  title: "Football Player Portfolio",
-  description: "Dynamic football player portfolio with admin dashboard.",
+  title: "بورتفوليو لاعب كرة قدم",
+  description: "بورتفوليو احترافي للاعب كرة قدم مع صفحة إدارة للمحتوى.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",

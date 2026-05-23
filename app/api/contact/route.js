@@ -25,7 +25,7 @@ export async function POST(request) {
 
   try {
     const rawText = await request.text();
-    if (rawText.length > 20_000) return NextResponse.json({ error: "Request body is too large." }, { status: 413 });
+    if (rawText.length > 20_000) return NextResponse.json({ error: "حجم الطلب كبير جداً." }, { status: 413 });
 
     const body = JSON.parse(rawText);
     if (String(body.companyWebsite || body.website || "").trim()) {
@@ -34,7 +34,7 @@ export async function POST(request) {
 
     const challenge = await verifyTurnstileToken(String(body.turnstileToken || ""), ip);
     if (!challenge.ok) {
-      return NextResponse.json({ error: challenge.error || "Security challenge failed." }, { status: 400 });
+      return NextResponse.json({ error: challenge.error || "تعذر التحقق من الحماية. برجاء المحاولة مرة أخرى." }, { status: 400 });
     }
 
     const original = {
@@ -52,7 +52,7 @@ export async function POST(request) {
       original.subject.length > LIMITS.subject ||
       original.message.length > LIMITS.message
     ) {
-      return NextResponse.json({ error: "One or more fields are too long." }, { status: 400 });
+      return NextResponse.json({ error: "بعض البيانات طويلة أكثر من المسموح." }, { status: 400 });
     }
 
     const name = sanitizeText(original.name, LIMITS.name);
@@ -62,11 +62,11 @@ export async function POST(request) {
     const message = sanitizeText(original.message, LIMITS.message);
 
     if (!name || !email || !subject || !message) {
-      return NextResponse.json({ error: "Name, email, subject and message are required." }, { status: 400 });
+      return NextResponse.json({ error: "برجاء إدخال الاسم والبريد الإلكتروني وعنوان الرسالة ونص الرسالة." }, { status: 400 });
     }
 
     if (!isValidEmail(email)) {
-      return NextResponse.json({ error: "Invalid email address." }, { status: 400 });
+      return NextResponse.json({ error: "البريد الإلكتروني غير صحيح." }, { status: 400 });
     }
 
     await connectDB();
@@ -74,6 +74,6 @@ export async function POST(request) {
 
     return NextResponse.json({ ok: true, saved: true, messageId: savedMessage._id });
   } catch (error) {
-    return safeErrorResponse(error, "Message could not be sent.", 500);
+    return safeErrorResponse(error, "تعذر إرسال الرسالة حالياً. برجاء المحاولة مرة أخرى.", 500);
   }
 }

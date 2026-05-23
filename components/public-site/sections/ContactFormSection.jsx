@@ -27,15 +27,15 @@ export default function ContactFormSection({ contact }) {
         body: JSON.stringify({ ...form, turnstileToken })
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "حدث خطأ أثناء إرسال الرسالة");
+      if (!response.ok) throw new Error(data.error || "تعذر إرسال الرسالة حالياً. برجاء المحاولة مرة أخرى.");
       setStatus({
         type: "success",
-        text: "تم حفظ الرسالة داخل لوحة التحكم بنجاح. يمكنك مراجعتها من قسم الرسائل."
+        text: "تم إرسال رسالتك بنجاح. شكراً لتواصلك، سيتم الرد عليك في أقرب وقت."
       });
       setForm({ name: "", email: "", phone: "", subject: "", message: "", companyWebsite: "" });
       setTurnstileToken("");
     } catch (error) {
-      setStatus({ type: "error", text: error.message });
+      setStatus({ type: "error", text: error.message || "تعذر إرسال الرسالة حالياً. برجاء المحاولة مرة أخرى." });
     } finally {
       setLoading(false);
     }
@@ -51,7 +51,7 @@ export default function ContactFormSection({ contact }) {
             )}
             <SectionBadge icon="envelope">{contact?.messageLabel || "رسالة مباشرة"}</SectionBadge>
             <h2 className="mb-3 text-3xl font-black leading-tight md:text-5xl">{contact?.messageTitle || "نموذج تواصل سريع"}</h2>
-            <p className="text-white/70">{contact?.messageSummary || "اكتب رسالتك وسيتم حفظها داخل لوحة التحكم."}</p>
+            <p className="text-white/70">{contact?.messageSummary || "اكتب رسالتك بوضوح، وسيتم التواصل معك في أقرب وقت ممكن."}</p>
           </div>
 
           <form onSubmit={submit} className="grid gap-4">

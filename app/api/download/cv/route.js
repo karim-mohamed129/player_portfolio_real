@@ -41,7 +41,7 @@ export async function GET(request) {
     const resolvedUrl = resolveCvUrl(cvUrl, request.url);
 
     if (!resolvedUrl) {
-      return NextResponse.json({ error: "CV file is not available." }, { status: 404 });
+      return NextResponse.json({ error: "ملف CV غير متاح حالياً." }, { status: 404 });
     }
 
     const controller = new AbortController();
@@ -50,23 +50,18 @@ export async function GET(request) {
     clearTimeout(timeout);
 
     if (!upstream.ok) {
-      return NextResponse.json({ error: "CV file could not be downloaded." }, { status: 404 });
-    }
-
-    const contentType = upstream.headers.get("content-type") || "application/pdf";
-    if (!contentType.includes("pdf") && !resolvedUrl.toLowerCase().endsWith(".pdf")) {
-      return NextResponse.json({ error: "CV file is not a PDF." }, { status: 400 });
+      return NextResponse.json({ error: "تعذر فتح ملف CV حالياً." }, { status: 404 });
     }
 
     const fileBuffer = await upstream.arrayBuffer();
     const maxBytes = 15 * 1024 * 1024;
     if (fileBuffer.byteLength > maxBytes) {
-      return NextResponse.json({ error: "CV file is too large." }, { status: 413 });
+      return NextResponse.json({ error: "ملف CV كبير جداً." }, { status: 413 });
     }
 
     const firstBytes = Buffer.from(fileBuffer.slice(0, 4)).toString("utf8");
     if (firstBytes !== "%PDF") {
-      return NextResponse.json({ error: "Invalid PDF file." }, { status: 400 });
+      return NextResponse.json({ error: "تعذر معاينة ملف CV. برجاء رفع ملف PDF صحيح من لوحة التحكم." }, { status: 400 });
     }
 
     return new NextResponse(fileBuffer, {
@@ -80,6 +75,6 @@ export async function GET(request) {
       }
     });
   } catch (error) {
-    return safeErrorResponse(error, "CV download failed.", 500);
+    return safeErrorResponse(error, "تعذر فتح ملف CV حالياً.", 500);
   }
 }

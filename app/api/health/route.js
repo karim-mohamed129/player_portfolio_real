@@ -14,6 +14,6 @@ export async function GET(request) {
     await connectDB();
     return NextResponse.json({ ok: true, status: "operational", database: "connected" });
   } catch (error) {
-    return safeErrorResponse(error, "Health check failed.", 500);
+    return safeErrorResponse(error, "تعذر التحقق من حالة الموقع حالياً.", 500);
   }
 }

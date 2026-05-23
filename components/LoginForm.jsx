@@ -26,7 +26,7 @@ export default function LoginForm() {
         body: JSON.stringify({ email, password, turnstileToken })
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Login failed");
+      if (!response.ok) throw new Error(data.error || "تعذر تسجيل الدخول. تأكد من البيانات وحاول مرة أخرى.");
       router.push("/admin");
       router.refresh();
     } catch (err) {
@@ -41,18 +41,18 @@ export default function LoginForm() {
       <section className="w-full max-w-md rounded-[2rem] border border-white/10 bg-white/[.075] p-7 shadow-glass backdrop-blur-xl">
         <a href="/" className="mb-8 inline-flex items-center gap-3 text-xl font-black">
           <IconCircle icon="football" className="h-12 w-12 text-xl" />
-          Player Admin
+          إدارة اللاعب
         </a>
-        <h1 className="mb-2 text-3xl font-black">تسجيل دخول لوحة التحكم</h1>
-        <p className="mb-7 text-white/60">ادخل بيانات الأدمن المتخزنة في MongoDB.</p>
+        <h1 className="mb-2 text-3xl font-black">تسجيل الدخول لإدارة الموقع</h1>
+        <p className="mb-7 text-white/60">أدخل بيانات المسؤول لإدارة محتوى الموقع بأمان.</p>
 
         <form onSubmit={submit} className="grid gap-4">
           <label>
-            <span className="label-dark">Email</span>
+            <span className="label-dark">البريد الإلكتروني</span>
             <input className="input-dark" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="admin@example.com" required />
           </label>
           <label>
-            <span className="label-dark">Password</span>
+            <span className="label-dark">كلمة المرور</span>
             <input className="input-dark" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required />
           </label>
           <SecurityTurnstile onToken={setTurnstileToken} />

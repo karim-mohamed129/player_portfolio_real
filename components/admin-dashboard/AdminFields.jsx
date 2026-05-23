@@ -34,6 +34,22 @@ const AVAILABLE_ICON_NAMES = [
   "card"
 ];
 
+
+function adminRequestHeaders(extra = {}) {
+  return {
+    "X-Requested-With": "XMLHttpRequest",
+    ...extra
+  };
+}
+
+function adminJsonHeaders(extra = {}) {
+  return {
+    "Content-Type": "application/json",
+    "X-Requested-With": "XMLHttpRequest",
+    ...extra
+  };
+}
+
 const ICON_LABELS = {
   football: "كرة",
   shirt: "تيشيرت",
@@ -64,7 +80,7 @@ const ICON_LABELS = {
   card: "بطاقة"
 };
 
-export function IconField({ label = "Font Awesome Icon", value, onChange }) {
+export function IconField({ label = "الأيقونة", value, onChange }) {
   const [open, setOpen] = useState(false);
   const selectedIcon = AVAILABLE_ICON_NAMES.includes(value) ? value : value || "football";
 
@@ -191,6 +207,7 @@ function ConfirmBox({ title, message, busy, onCancel, onConfirm }) {
 }
 
 export function ImageUpload({ label, value, onChange }) {
+  const hasFile = Boolean(String(value || "").trim());
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [pendingFile, setPendingFile] = useState(null);
@@ -209,12 +226,10 @@ export function ImageUpload({ label, value, onChange }) {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("folder", "player-portfolio");
-      formData.append("resourceType", "auto");
       if (value) formData.append("oldUrl", value);
       const response = await fetch("/api/admin/upload", { method: "POST", headers: adminRequestHeaders(), body: formData });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Upload failed");
+      if (!response.ok) throw new Error(data.error || "تعذر رفع الملف حالياً. حاول مرة أخرى.");
       await applyChange(data.secure_url);
     } catch (err) {
       setError(err.message);
@@ -230,7 +245,7 @@ export function ImageUpload({ label, value, onChange }) {
     event.target.value = "";
     if (!file) return;
 
-    if (value) {
+    if (hasFile) {
       setPendingFile(file);
       setConfirmUploadOpen(true);
       return;
@@ -257,21 +272,30 @@ export function ImageUpload({ label, value, onChange }) {
       <span className="label-dark">{label}</span>
       <div className="grid gap-3 md:grid-cols-[140px_1fr] md:items-center">
         <div className="h-28 overflow-hidden rounded-2xl border border-white/10 bg-black/20">
-          {value ? <img src={value} alt="preview" className="h-full w-full object-contain p-2" /> : <div className="grid h-full place-items-center text-white/35"><FaIcon name="image" className="h-7 w-7" /></div>}
+          {value ? (
+            <img src={value} alt="preview" className="h-full w-full object-contain p-2" />
+          ) : (
+            <div className="grid h-full place-items-center p-3 text-center text-white/35">
+              <div className="grid gap-2">
+                <FaIcon name="image" className="mx-auto h-7 w-7" />
+                <span className="text-xs font-black">لا توجد صورة</span>
+              </div>
+            </div>
+          )}
         </div>
         <div className="grid gap-3">
           <div className="flex flex-wrap gap-2">
             <label className="btn-muted w-fit cursor-pointer">
               <span className="inline-flex items-center gap-2"><FaIcon name="image" className="h-4 w-4" />{uploading ? "جاري الرفع والحفظ..." : value ? "تعديل الصورة" : "رفع صورة"}</span>
-              <input type="file" accept="image/*,.svg,.ico" onChange={upload} className="hidden" disabled={uploading} />
+              <input type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/avif,image/bmp,image/x-icon,.ico" onChange={upload} className="hidden" disabled={uploading} />
             </label>
-            {value && (
+            {hasFile && (
               <button type="button" onClick={() => setConfirmClearOpen(true)} className="rounded-2xl border border-red-400/20 bg-red-400/10 px-4 py-2 text-sm font-black text-red-100" disabled={uploading}>
                 <span className="inline-flex items-center gap-2"><FaIcon name="trash" className="h-4 w-4" />حذف الصورة</span>
               </button>
             )}
           </div>
-          <p className="text-xs font-bold text-white/40">بعد الرفع أو الحذف يتم حفظ التغيير تلقائيًا بدون الضغط على زر حفظ التعديلات.</p>
+          <p className="text-xs font-bold text-white/40">يمكنك رفع صورة بصيغة PNG أو JPG أو WEBP أو ICO. بعد التأكيد سيظهر التغيير مباشرة في الموقع.</p>
           {error && <p className="text-sm font-bold text-red-200">{error}</p>}
         </div>
       </div>
@@ -279,7 +303,7 @@ export function ImageUpload({ label, value, onChange }) {
       {confirmUploadOpen && (
         <ConfirmBox
           title="تأكيد تعديل الصورة"
-          message="هل تريد تعديل الصورة الحالية بالصورة الجديدة؟ سيتم حفظ التغيير تلقائيًا."
+          message="هل تريد استبدال الصورة الحالية بالصورة الجديدة؟ سيتم تطبيق التغيير فوراً بعد التأكيد."
           busy={uploading}
           onCancel={() => { setPendingFile(null); setConfirmUploadOpen(false); }}
           onConfirm={() => doUpload(pendingFile)}
@@ -289,7 +313,7 @@ export function ImageUpload({ label, value, onChange }) {
       {confirmClearOpen && (
         <ConfirmBox
           title="تأكيد حذف الصورة"
-          message="هل تريد إزالة هذه الصورة من السكشن؟ سيتم حفظ التغيير تلقائيًا."
+          message="هل تريد إزالة هذه الصورة من هذا القسم؟ سيتم تطبيق التغيير فوراً بعد التأكيد."
           busy={uploading}
           onCancel={() => setConfirmClearOpen(false)}
           onConfirm={clearImage}
@@ -300,6 +324,7 @@ export function ImageUpload({ label, value, onChange }) {
 }
 
 export function FileUpload({ label, value, onChange, accept = "application/pdf,.pdf" }) {
+  const hasFile = Boolean(String(value || "").trim());
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [pendingFile, setPendingFile] = useState(null);
@@ -318,12 +343,10 @@ export function FileUpload({ label, value, onChange, accept = "application/pdf,.
     try {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("folder", "player-portfolio/cv");
-      formData.append("resourceType", "raw");
       if (value) formData.append("oldUrl", value);
       const response = await fetch("/api/admin/upload", { method: "POST", headers: adminRequestHeaders(), body: formData });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Upload failed");
+      if (!response.ok) throw new Error(data.error || "تعذر رفع الملف حالياً. حاول مرة أخرى.");
       await applyChange(data.secure_url);
     } catch (err) {
       setError(err.message);
@@ -339,7 +362,7 @@ export function FileUpload({ label, value, onChange, accept = "application/pdf,.
     event.target.value = "";
     if (!file) return;
 
-    if (value) {
+    if (hasFile) {
       setPendingFile(file);
       setConfirmUploadOpen(true);
       return;
@@ -349,14 +372,14 @@ export function FileUpload({ label, value, onChange, accept = "application/pdf,.
   }
 
   async function deleteCurrentFileFromCloudinary() {
-    if (!value) return;
+    if (!hasFile) return;
     const response = await fetch("/api/admin/cloudinary/delete", {
       method: "POST",
       headers: adminJsonHeaders(),
       body: JSON.stringify({ url: value })
     });
     const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(data.error || "Could not delete the current CV from Cloudinary");
+    if (!response.ok) throw new Error(data.error || "تعذر حذف الملف الحالي. حاول مرة أخرى.");
   }
 
   async function clearFile() {
@@ -377,27 +400,30 @@ export function FileUpload({ label, value, onChange, accept = "application/pdf,.
     <div className="admin-subpanel">
       <span className="label-dark">{label}</span>
       <div className="grid gap-3 md:grid-cols-[140px_1fr] md:items-center">
-        <div className="grid h-28 place-items-center rounded-2xl border border-white/10 bg-black/20 text-white/35">
-          <FaIcon name="file" className="h-8 w-8" />
+        <div className="grid h-28 place-items-center rounded-2xl border border-white/10 bg-black/20 p-3 text-center text-white/35">
+          <div className="grid gap-2">
+            <FaIcon name="file" className="mx-auto h-8 w-8" />
+            <span className="text-xs font-black">{hasFile ? "يوجد ملف مرفق" : "لا يوجد ملف مرفق"}</span>
+          </div>
         </div>
         <div className="grid gap-3">
           <div className="flex flex-wrap gap-2">
-            {value && (
+            {hasFile && (
               <a href="/api/download/cv?preview=1" target="_blank" className="btn-muted" rel="noreferrer">
                 <span className="inline-flex items-center gap-2"><FaIcon name="eye" className="h-4 w-4" />معاينة الملف</span>
               </a>
             )}
             <label className="btn-muted w-fit cursor-pointer">
-              <span className="inline-flex items-center gap-2"><FaIcon name="file" className="h-4 w-4" />{uploading ? "جاري الرفع والحفظ..." : value ? "تعديل ملف CV" : "رفع ملف CV"}</span>
+              <span className="inline-flex items-center gap-2"><FaIcon name="file" className="h-4 w-4" />{uploading ? "جاري الرفع والحفظ..." : hasFile ? "تعديل ملف CV" : "رفع ملف CV"}</span>
               <input type="file" accept={accept} onChange={upload} className="hidden" disabled={uploading} />
             </label>
-            {value && (
+            {hasFile && (
               <button type="button" onClick={() => setConfirmClearOpen(true)} className="rounded-2xl border border-red-400/20 bg-red-400/10 px-4 py-2 text-sm font-black text-red-100" disabled={uploading}>
                 <span className="inline-flex items-center gap-2"><FaIcon name="trash" className="h-4 w-4" />حذف ملف CV</span>
               </button>
             )}
           </div>
-          <p className="text-xs font-bold text-white/40">يمكنك رفع ملف PDF أو حذفه، وسيتم حفظ التغيير تلقائيًا مع تنظيف ملف CV القديم من Cloudinary.</p>
+          <p className="text-xs font-bold text-white/40">يمكنك رفع ملف PDF مناسب، ثم معاينته أو استبداله أو حذفه في أي وقت.</p>
           {error && <p className="text-sm font-bold text-red-200">{error}</p>}
         </div>
       </div>
@@ -405,7 +431,7 @@ export function FileUpload({ label, value, onChange, accept = "application/pdf,.
       {confirmUploadOpen && (
         <ConfirmBox
           title="تأكيد تعديل ملف CV"
-          message="هل تريد استبدال ملف CV الحالي؟ سيتم حذف الملف الحالي من Cloudinary أولًا، ثم رفع الملف الجديد وحفظ التغيير تلقائيًا."
+          message="هل تريد استبدال ملف CV الحالي بالملف الجديد؟ سيتم تطبيق التغيير بعد التأكيد."
           busy={uploading}
           onCancel={() => { setPendingFile(null); setConfirmUploadOpen(false); }}
           onConfirm={() => doUpload(pendingFile)}
@@ -415,7 +441,7 @@ export function FileUpload({ label, value, onChange, accept = "application/pdf,.
       {confirmClearOpen && (
         <ConfirmBox
           title="تأكيد حذف ملف CV"
-          message="هل تريد حذف ملف CV؟ سيتم حذفه من Cloudinary ثم حفظ التغيير تلقائيًا."
+          message="هل تريد حذف ملف CV الحالي؟ سيتم تطبيق التغيير بعد التأكيد."
           busy={uploading}
           onCancel={() => setConfirmClearOpen(false)}
           onConfirm={clearFile}

@@ -3,7 +3,6 @@ import { getContentDocument, updateContent } from "@/lib/content";
 import { requireApiAdmin } from "@/lib/auth";
 import { cleanupRemovedCloudinaryImages, cleanupUnregisteredCloudinaryFolderImages } from "@/lib/cloudinaryAssets";
 import { requireJsonRequest, safeErrorResponse } from "@/lib/security";
-import { writeAuditLog } from "@/lib/audit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -16,7 +15,7 @@ export async function GET(request) {
     const doc = await getContentDocument({ createIfMissing: true });
     return NextResponse.json({ data: doc.data, updatedAt: doc.updatedAt, updatedBy: doc.updatedBy });
   } catch (error) {
-    return safeErrorResponse(error, "Content could not be loaded.", 500);
+    return safeErrorResponse(error, "تعذر تحميل محتوى الموقع حالياً.", 500);
   }
 }
 
@@ -36,7 +35,6 @@ export async function PUT(request) {
     const data = JSON.parse(rawText);
     const oldDoc = await getContentDocument({ createIfMissing: true });
     const doc = await updateContent(data, admin.email);
-    await writeAuditLog({ request, admin, action: "content.update", target: "main", status: "success" });
 
     let removedImagesCleanup = null;
     let folderCleanup = null;
@@ -44,19 +42,19 @@ export async function PUT(request) {
     try {
       removedImagesCleanup = await cleanupRemovedCloudinaryImages(oldDoc?.data, doc.data);
     } catch (cleanupError) {
-      console.error("Cloudinary removed-assets cleanup failed:", cleanupError);
-      removedImagesCleanup = { error: "Cleanup failed.", deleted: [], failed: [] };
+      console.error("File cleanup warning:", cleanupError);
+      removedImagesCleanup = { error: "تعذر تحديث بعض الملفات.", deleted: [], failed: [] };
     }
 
     try {
       folderCleanup = await cleanupUnregisteredCloudinaryFolderImages(doc.data);
     } catch (cleanupError) {
-      console.error("Cloudinary folder cleanup failed:", cleanupError);
-      folderCleanup = { error: "Cleanup failed.", deleted: [], failed: [] };
+      console.error("File cleanup warning:", cleanupError);
+      folderCleanup = { error: "تعذر تحديث بعض الملفات.", deleted: [], failed: [] };
     }
 
     return NextResponse.json({ ok: true, data: doc.data, updatedAt: doc.updatedAt, cleanup: { removedImagesCleanup, folderCleanup } });
   } catch (error) {
-    return safeErrorResponse(error, "Content could not be saved.", 500);
+    return safeErrorResponse(error, "تعذر حفظ محتوى الموقع حالياً.", 500);
   }
 }

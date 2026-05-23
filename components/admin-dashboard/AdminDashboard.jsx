@@ -15,7 +15,6 @@ import MediaTab from "./tabs/MediaTab";
 import ContactTab from "./tabs/ContactTab";
 import MessagesTab from "./tabs/MessagesTab";
 import RestoreDefaultsTab from "./tabs/RestoreDefaultsTab";
-import AuditTab from "./tabs/AuditTab";
 
 
 function adminJsonHeaders(extra = {}) {
@@ -35,7 +34,7 @@ function adminRequestHeaders(extra = {}) {
 
 const tabs = [
   ["general", "عام", "gauge"],
-  ["hero", "Hero", "football"],
+  ["hero", "الرئيسية", "football"],
   ["overview", "اللاعب", "user"],
   ["stats", "الإحصائيات", "chart"],
   ["skills", "المهارات", "bolt"],
@@ -44,8 +43,7 @@ const tabs = [
   ["media", "الصور", "images"],
   ["contact", "التواصل", "phone"],
   ["messages", "الرسائل", "envelope"],
-  ["restore", "استعادة الافتراضي", "restore"],
-  ["audit", "سجل الأمان", "shield"]
+  ["restore", "استعادة الافتراضي", "restore"]
 ];
 
 export default function AdminDashboard({ admin }) {
@@ -53,7 +51,6 @@ export default function AdminDashboard({ admin }) {
   const [mobileTabsOpen, setMobileTabsOpen] = useState(false);
   const [content, setContent] = useState(defaultContent);
   const [messages, setMessages] = useState([]);
-  const [auditLogs, setAuditLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [restoring, setRestoring] = useState(false);
@@ -82,33 +79,19 @@ export default function AdminDashboard({ admin }) {
   async function loadAll() {
     setLoading(true);
     try {
-      const [contentResponse, messagesResponse, auditResponse] = await Promise.all([
+      const [contentResponse, messagesResponse] = await Promise.all([
         fetch("/api/admin/content", { cache: "no-store" }),
-        fetch("/api/admin/messages", { cache: "no-store" }),
-        fetch("/api/admin/audit", { cache: "no-store" })
+        fetch("/api/admin/messages", { cache: "no-store" })
       ]);
       const contentData = await contentResponse.json();
       const messagesData = await messagesResponse.json();
-      const auditData = await auditResponse.json();
-      if (!contentResponse.ok) throw new Error(contentData.error || "Cannot load content");
+      if (!contentResponse.ok) throw new Error(contentData.error || "تعذر تحميل محتوى الموقع حالياً.");
       setContent(contentData.data || defaultContent);
       if (messagesResponse.ok) setMessages(messagesData.messages || []);
-      if (auditResponse.ok) setAuditLogs(auditData.logs || []);
     } catch (error) {
       setStatus(error.message);
     } finally {
       setLoading(false);
-    }
-  }
-
-  async function loadAuditLogs() {
-    try {
-      const response = await fetch("/api/admin/audit", { cache: "no-store" });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Cannot load audit logs");
-      setAuditLogs(data.logs || []);
-    } catch (error) {
-      setStatus(error.message);
     }
   }
 
@@ -145,7 +128,7 @@ export default function AdminDashboard({ admin }) {
   function addItem(path, item) {
     confirmAction({
       title: "تأكيد الإضافة",
-      message: "هل تريد إضافة عنصر جديد في هذا السكشن؟",
+      message: "هل تريد إضافة عنصر جديد في هذا القسم؟",
       onConfirm: () => performAddItem(path, item)
     });
   }
@@ -161,7 +144,7 @@ export default function AdminDashboard({ admin }) {
   function removeItem(path, index) {
     confirmAction({
       title: "تأكيد الحذف",
-      message: "هل تريد حذف هذا العنصر من السكشن؟ لن يتم تطبيق التغيير نهائياً إلا بعد الضغط على حفظ التعديلات.",
+      message: "هل تريد حذف هذا العنصر من هذا القسم؟ يمكنك مراجعة التغيير قبل حفظ التعديلات.",
       onConfirm: () => performRemoveItem(path, index)
     });
   }
@@ -172,10 +155,10 @@ export default function AdminDashboard({ admin }) {
     const failed = (cleanup?.removedImagesCleanup?.failed?.length || 0) + (cleanup?.folderCleanup?.failed?.length || 0);
     const errors = [cleanup?.removedImagesCleanup?.error, cleanup?.folderCleanup?.error].filter(Boolean);
 
-    if (errors.length) return `تم الحفظ، لكن تنظيف Cloudinary يحتاج مراجعة: ${errors.join(" | ")}`;
-    if (failed) return `تم الحفظ، وتم حذف ${removedDeleted + folderDeleted} صورة قديمة، لكن فشل حذف ${failed} صورة.`;
-    if (removedDeleted || folderDeleted) return `تم حفظ التعديلات وحذف ${removedDeleted + folderDeleted} صورة غير مستخدمة من Cloudinary.`;
-    return "تم حفظ التعديلات بنجاح. لا توجد صور قديمة تحتاج حذف.";
+    if (errors.length) return `تم حفظ التعديلات، مع وجود بعض الملفات التي تحتاج مراجعة لاحقاً.`;
+    if (failed) return "تم حفظ التعديلات، مع وجود بعض الملفات التي تحتاج مراجعة لاحقاً.";
+    if (removedDeleted || folderDeleted) return `تم حفظ التعديلات وتحديث الملفات المرتبطة بالموقع بنجاح.`;
+    return "تم حفظ التعديلات بنجاح.";
   }
 
   async function saveContent(payload = content, options = {}) {
@@ -188,9 +171,9 @@ export default function AdminDashboard({ admin }) {
         body: JSON.stringify(payload)
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Save failed");
+      if (!response.ok) throw new Error(data.error || "تعذر حفظ التعديلات حالياً.");
       setContent(data.data || payload);
-      setStatus(options.auto ? "تم رفع الملف وحفظ التغيير تلقائيًا." : getCleanupMessage(data.cleanup));
+      setStatus(options.auto ? "تم رفع الملف وتطبيق التغيير بنجاح." : getCleanupMessage(data.cleanup));
       return data;
     } catch (error) {
       setStatus(error.message);
@@ -214,7 +197,7 @@ export default function AdminDashboard({ admin }) {
     try {
       const response = await fetch("/api/admin/content/reset", { method: "POST", headers: adminRequestHeaders() });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Restore defaults failed");
+      if (!response.ok) throw new Error(data.error || "تعذرت استعادة الإعدادات حالياً.");
       setContent(data.data || defaultContent);
       setStatus(getCleanupMessage(data.cleanup).replace("تم حفظ التعديلات", "تمت استعادة الإعدادات الافتراضية"));
       return true;
@@ -234,7 +217,7 @@ export default function AdminDashboard({ admin }) {
   function logout() {
     confirmAction({
       title: "تأكيد الخروج",
-      message: "هل تريد تسجيل الخروج من لوحة التحكم؟",
+      message: "هل تريد تسجيل الخروج من صفحة الإدارة؟",
       onConfirm: performLogout
     });
   }
@@ -267,7 +250,7 @@ export default function AdminDashboard({ admin }) {
   function deleteMessage(id) {
     confirmAction({
       title: "تأكيد حذف الرسالة",
-      message: "هل تريد حذف هذه الرسالة نهائياً من قاعدة البيانات؟",
+      message: "هل تريد حذف هذه الرسالة نهائياً؟",
       onConfirm: () => performDeleteMessage(id)
     });
   }
@@ -298,12 +281,11 @@ export default function AdminDashboard({ admin }) {
     if (active === "contact") return <ContactTab content={content} update={update} />;
     if (active === "messages") return <MessagesTab messages={messages} loadAll={loadAll} patchMessage={patchMessage} deleteMessage={deleteMessage} />;
     if (active === "restore") return <RestoreDefaultsTab restoring={restoring} onRestoreDefaults={restoreDefaults} />;
-    if (active === "audit") return <AuditTab auditLogs={auditLogs} loadAuditLogs={loadAuditLogs} />;
     return null;
   }
 
   if (loading) {
-    return <div className="grid min-h-screen place-items-center text-xl font-black text-white">جاري تحميل لوحة التحكم...</div>;
+    return <div className="grid min-h-screen place-items-center text-xl font-black text-white">جاري تجهيز صفحة الإدارة...</div>;
   }
 
   return (
@@ -311,8 +293,8 @@ export default function AdminDashboard({ admin }) {
       <div className="mx-auto max-w-7xl">
         <header className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-[2rem] border border-white/10 bg-white/[.07] p-5 shadow-glass backdrop-blur-xl">
           <div>
-            <p className="inline-flex items-center gap-2 text-sm font-black text-gold"><FaIcon name="gauge" className="h-4 w-4" /> Admin Dashboard</p>
-            <h1 className="text-3xl font-black">لوحة تحكم البورتفوليو</h1>
+            <p className="inline-flex items-center gap-2 text-sm font-black text-gold"><FaIcon name="gauge" className="h-4 w-4" /> إدارة الموقع</p>
+            <h1 className="text-3xl font-black">إدارة محتوى الموقع</h1>
           </div>
           <div className="flex flex-wrap gap-3">
             <a href="/" target="_blank" className="btn-muted"><span className="inline-flex items-center gap-2"><FaIcon name="eye" className="h-4 w-4" />عرض الموقع</span></a>
@@ -328,7 +310,7 @@ export default function AdminDashboard({ admin }) {
             type="button"
             onClick={() => setMobileTabsOpen((current) => !current)}
             className="flex w-full items-center justify-between gap-3 rounded-[1.7rem] border border-white/10 bg-gradient-to-br from-white/[.12] to-white/[.04] p-3 text-start shadow-glass backdrop-blur-xl transition hover:border-gold/30"
-            aria-label="اختيار قسم لوحة التحكم"
+            aria-label="اختيار قسم الإدارة"
             aria-expanded={mobileTabsOpen}
           >
             <span className="flex min-w-0 items-center gap-3">
@@ -349,7 +331,7 @@ export default function AdminDashboard({ admin }) {
           {mobileTabsOpen && (
             <div className="absolute left-0 right-0 top-[calc(100%+10px)] z-50 rounded-[1.7rem] border border-white/10 bg-[#07100c]/95 p-3 shadow-[0_24px_70px_rgba(0,0,0,.45)] backdrop-blur-2xl">
               <div className="mb-3 flex items-center justify-between gap-3 rounded-[1.25rem] bg-white/[.05] px-4 py-3">
-                <span className="text-sm font-black text-white/80">اختار القسم المطلوب تعديله</span>
+                <span className="text-sm font-black text-white/80">اختر القسم المطلوب تعديله</span>
                 <span className="rounded-full bg-gold/15 px-3 py-1 text-xs font-black text-gold">{tabs.length} أقسام</span>
               </div>
               <div className="grid max-h-[62vh] grid-cols-2 gap-2 overflow-y-auto pr-1 sm:grid-cols-3">

@@ -7,7 +7,7 @@ export async function generateMetadata() {
   const content = await getPublicContent();
   const faviconUrl = content?.site?.faviconUrl || "/favicon.svg";
   return {
-    title: content?.site?.title || "Football Player Portfolio",
+    title: content?.site?.title || "بورتفوليو لاعب كرة قدم",
     description: content?.site?.description || "Professional player portfolio",
     icons: {
       icon: faviconUrl,

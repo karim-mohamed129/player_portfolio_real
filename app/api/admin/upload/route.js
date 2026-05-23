@@ -3,7 +3,6 @@ import { configureCloudinary } from "@/lib/cloudinary";
 import { requireApiAdmin } from "@/lib/auth";
 import { deleteCloudinaryPublicIds, extractCloudinaryPublicId, isManagedCloudinaryPublicId } from "@/lib/cloudinaryAssets";
 import { safeErrorResponse } from "@/lib/security";
-import { writeAuditLog } from "@/lib/audit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -57,7 +56,7 @@ export async function POST(request) {
   try {
     const contentLength = Number(request.headers.get("content-length") || 0);
     if (contentLength && contentLength > 13 * 1024 * 1024) {
-      return NextResponse.json({ error: "Upload is too large." }, { status: 413 });
+      return NextResponse.json({ error: "حجم الملف كبير جداً." }, { status: 413 });
     }
 
     const formData = await request.formData();
@@ -84,17 +83,17 @@ export async function POST(request) {
 
     const maxSize = isPdf ? 12 * 1024 * 1024 : 8 * 1024 * 1024;
     if (file.size > maxSize) {
-      return NextResponse.json({ error: isPdf ? "PDF is too large. Max size is 12MB." : "Image is too large. Max size is 8MB." }, { status: 400 });
+      return NextResponse.json({ error: isPdf ? "حجم ملف PDF كبير جداً. الحد الأقصى 12 ميجابايت." : "حجم الصورة كبير جداً. الحد الأقصى 8 ميجابايت." }, { status: 400 });
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
 
     if (isPdf && !hasPdfMagic(buffer)) {
-      return NextResponse.json({ error: "Invalid PDF file." }, { status: 400 });
+      return NextResponse.json({ error: "ملف PDF غير صحيح. برجاء رفع ملف صالح." }, { status: 400 });
     }
 
     if (isImage && !hasSafeImageMagic(buffer, mimeType, fileName)) {
-      return NextResponse.json({ error: "Invalid or unsupported image file." }, { status: 400 });
+      return NextResponse.json({ error: "الصورة غير صالحة أو بصيغة غير مدعومة." }, { status: 400 });
     }
 
     const oldUrl = String(formData.get("oldUrl") || "").trim();
@@ -103,7 +102,7 @@ export async function POST(request) {
       if (oldPublicId && isManagedCloudinaryPublicId(oldPublicId)) {
         const deleteResult = await deleteCloudinaryPublicIds([oldPublicId]);
         if (deleteResult.failed?.length) {
-          return NextResponse.json({ error: "Could not delete the old CV from Cloudinary before uploading the new file." }, { status: 500 });
+          return NextResponse.json({ error: "تعذر حذف ملف CV القديم قبل رفع الملف الجديد." }, { status: 500 });
         }
       }
     }
@@ -122,7 +121,6 @@ export async function POST(request) {
       unique_filename: true
     });
 
-    await writeAuditLog({ request, admin, action: "upload.file", target: result.public_id, status: "success", details: { resource_type: result.resource_type, bytes: result.bytes } });
 
     return NextResponse.json({
       secure_url: result.secure_url,
@@ -134,6 +132,6 @@ export async function POST(request) {
       bytes: result.bytes
     });
   } catch (error) {
-    return safeErrorResponse(error, "Upload failed.", 500);
+    return safeErrorResponse(error, "تعذر رفع الملف حالياً. حاول مرة أخرى..", 500);
   }
 }
