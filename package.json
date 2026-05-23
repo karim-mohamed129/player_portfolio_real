@@ -1,0 +1,32 @@
+{
+  "name": "player-portfolio-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 9682",
+    "build": "next build",
+    "start": "next start -p 9682",
+    "lint": "next lint",
+    "seed": "echo \"Content is seeded automatically on first admin login.\""
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^7.2.0",
+    "@fortawesome/free-solid-svg-icons": "^7.2.0",
+    "@fortawesome/react-fontawesome": "^3.3.1",
+    "@next/swc-win32-x64-msvc": "^16.2.6",
+    "@tailwindcss/forms": "^0.5.10",
+    "bcryptjs": "^2.4.3",
+    "cloudinary": "^2.5.1",
+    "jose": "^5.9.6",
+    "mongoose": "^8.9.5",
+    "next": "^15.3.4",
+    "nodemailer": "^6.9.16",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17"
+  }
+}
