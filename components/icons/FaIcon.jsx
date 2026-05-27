@@ -7,6 +7,7 @@ import {
   faCalendarDays,
   faChartLine,
   faChevronDown,
+  faCheck,
   faCircle,
   faClock,
   faDumbbell,
@@ -41,7 +42,10 @@ import {
   faTimeline,
   faAddressCard,
   faTriangleExclamation,
-  faRotateLeft
+  faRotateLeft,
+  faGlobe,
+  faMoon,
+  faSun
 } from "@fortawesome/free-solid-svg-icons";
 
 const iconMap = {
@@ -66,6 +70,7 @@ const iconMap = {
   location: faLocationDot,
   "location-dot": faLocationDot,
   "chevron-down": faChevronDown,
+  check: faCheck,
   chevron: faChevronDown,
   chart: faChartLine,
   "chart-line": faChartLine,
@@ -96,6 +101,10 @@ const iconMap = {
   timeline: faTimeline,
   card: faAddressCard,
   circle: faCircle,
+  globe: faGlobe,
+  language: faGlobe,
+  moon: faMoon,
+  sun: faSun,
 
   "⚽": faFutbol,
   "👕": faShirt,

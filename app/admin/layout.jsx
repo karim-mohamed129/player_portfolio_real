@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "إدارة الموقع | بورتفوليو اللاعب"
+  title: "Dashboard | Player Portfolio"
 };
 
 export default function AdminLayout({ children }) {

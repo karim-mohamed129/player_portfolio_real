@@ -3,15 +3,15 @@
 import { useState } from "react";
 import FaIcon from "../../icons/FaIcon";
 
-export default function RestoreDefaultsTab({ restoring, onRestoreDefaults }) {
+export default function RestoreDefaultsTab({ restoring, onRestoreDefaults, t }) {
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   return (
     <div className="grid gap-5">
       <div>
-        <h2 className="admin-title">استعادة الإعدادات الافتراضية</h2>
+        <h2 className="admin-title">{t("admin.restore.title")}</h2>
         <p className="mt-2 max-w-3xl leading-8 text-white/60">
-          من هنا تقدر ترجع محتوى الموقع لنفس الشكل والمحتوى الذي ظهر أول مرة عند تشغيل الموقع. هذا الإجراء سيستبدل النصوص، الإحصائيات، الصور، السكشنات، وروابط التواصل بالإعدادات الافتراضية.
+          {t("admin.restore.summary")}
         </p>
       </div>
 
@@ -21,27 +21,27 @@ export default function RestoreDefaultsTab({ restoring, onRestoreDefaults }) {
             <FaIcon name="file" className="h-5 w-5" />
           </span>
           <div>
-            <h3 className="text-xl font-black text-white">ما الذي سيحدث عند استعادة الافتراضي؟</h3>
-            <p className="text-sm leading-7 text-white/60">هذا القسم مخصص لإرجاع محتوى الموقع كما ظهر أول مرة قبل أي تعديلات محفوظة.</p>
+            <h3 className="text-xl font-black text-white">{t("admin.restore.whatHappensTitle")}</h3>
+            <p className="text-sm leading-7 text-white/60">{t("admin.restore.whatHappensSummary")}</p>
           </div>
         </div>
 
         <div className="grid gap-3 md:grid-cols-2">
           <div className="rounded-3xl border border-white/10 bg-black/20 p-4">
-            <h4 className="mb-2 font-black text-white">المحتوى الذي سيتم استبداله</h4>
-            <p className="text-sm leading-7 text-white/65">سيتم رجوع سكشنات الموقع كما ظهرت أول مرة: الرئيسية، التعريف، الإحصائيات، المهارات، المسيرة، الإنجازات، الصور، وبيانات التواصل.</p>
+            <h4 className="mb-2 font-black text-white">{t("admin.restore.replaceTitle")}</h4>
+            <p className="text-sm leading-7 text-white/65">{t("admin.restore.replaceText")}</p>
           </div>
           <div className="rounded-3xl border border-white/10 bg-black/20 p-4">
-            <h4 className="mb-2 font-black text-white">البيانات التي لن تُحذف</h4>
-            <p className="text-sm leading-7 text-white/65">رسائل العملاء الموجودة في تبويب الرسائل وحساب الأدمن لن يتم حذفهم عند تطبيق الاستعادة.</p>
+            <h4 className="mb-2 font-black text-white">{t("admin.restore.keepTitle")}</h4>
+            <p className="text-sm leading-7 text-white/65">{t("admin.restore.keepText")}</p>
           </div>
           <div className="rounded-3xl border border-white/10 bg-black/20 p-4">
-            <h4 className="mb-2 font-black text-white">الصور والملفات</h4>
-            <p className="text-sm leading-7 text-white/65">بعد رجوع المحتوى الافتراضي، سيتم تنظيف الصور غير المستخدمة حتى لا تبقى ملفات غير مرتبطة بالموقع.</p>
+            <h4 className="mb-2 font-black text-white">{t("admin.restore.filesTitle")}</h4>
+            <p className="text-sm leading-7 text-white/65">{t("admin.restore.filesText")}</p>
           </div>
           <div className="rounded-3xl border border-white/10 bg-black/20 p-4">
-            <h4 className="mb-2 font-black text-white">قبل التنفيذ</h4>
-            <p className="text-sm leading-7 text-white/65">عند الضغط على زر تطبيق ستظهر رسالة تأكيد. لو ضغطت نعم سيتم التنفيذ، ولو ضغطت إلغاء لن يحدث أي تغيير.</p>
+            <h4 className="mb-2 font-black text-white">{t("admin.restore.beforeTitle")}</h4>
+            <p className="text-sm leading-7 text-white/65">{t("admin.restore.beforeText")}</p>
           </div>
         </div>
       </div>
@@ -52,15 +52,15 @@ export default function RestoreDefaultsTab({ restoring, onRestoreDefaults }) {
             <FaIcon name="warning" className="h-5 w-5" />
           </span>
           <div>
-            <h3 className="text-xl font-black">تنبيه مهم قبل التطبيق</h3>
-            <p className="text-sm leading-7 text-red-100/75">أي تعديلات محفوظة حالياً سيتم استبدالها بمحتوى البداية الافتراضي.</p>
+            <h3 className="text-xl font-black">{t("admin.restore.warningTitle")}</h3>
+            <p className="text-sm leading-7 text-red-100/75">{t("admin.restore.warningText")}</p>
           </div>
         </div>
         <ul className="grid gap-2 text-sm leading-7 text-white/70">
-          <li>• هذه العملية لا يمكن التراجع عنها بزر واحد بعد التنفيذ، لكن تقدر تعدل المحتوى يدويًا مرة أخرى من التابات.</li>
-          <li>• الرسائل الموجودة في قسم الرسائل لن يتم حذفها.</li>
-          <li>• الصور التي أصبحت غير مستخدمة سيتم تنظيفها عند تطبيق الاستعادة.</li>
-          <li>• بعد الاستعادة يمكنك تعديل المحتوى مرة أخرى والضغط على حفظ التعديلات.</li>
+          <li>• {t("admin.restore.bullet1")}</li>
+          <li>• {t("admin.restore.bullet2")}</li>
+          <li>• {t("admin.restore.bullet3")}</li>
+          <li>• {t("admin.restore.bullet4")}</li>
         </ul>
       </div>
 
@@ -72,7 +72,7 @@ export default function RestoreDefaultsTab({ restoring, onRestoreDefaults }) {
       >
         <span className="inline-flex items-center gap-2">
           <FaIcon name="restore" className="h-4 w-4" />
-          {restoring ? "جاري التطبيق..." : "تطبيق"}
+          {restoring ? t("admin.restore.applying") : t("admin.common.apply")}
         </span>
       </button>
 
@@ -84,15 +84,15 @@ export default function RestoreDefaultsTab({ restoring, onRestoreDefaults }) {
                 <FaIcon name="restore" className="h-5 w-5" />
               </span>
               <div>
-                <h3 className="text-2xl font-black">تأكيد الاستعادة</h3>
-                <p className="text-sm text-white/55">هل تريد استعادة الإعدادات الافتراضية الآن؟</p>
+                <h3 className="text-2xl font-black">{t("admin.restore.confirmTitle")}</h3>
+                <p className="text-sm text-white/55">{t("admin.restore.confirmQuestion")}</p>
               </div>
             </div>
             <p className="mb-6 leading-8 text-white/70">
-              سيتم رجوع الموقع كما كان أول مرة، وسيتم تنظيف الصور غير المستخدمة بعد التحديث.
+              {t("admin.restore.confirmBody")}
             </p>
             <div className="flex flex-wrap justify-end gap-3">
-              <button type="button" className="btn-muted" onClick={() => setConfirmOpen(false)} disabled={restoring}>إلغاء</button>
+              <button type="button" className="btn-muted" onClick={() => setConfirmOpen(false)} disabled={restoring}>{t("admin.common.cancel")}</button>
               <button
                 type="button"
                 className="btn-red"
@@ -102,7 +102,7 @@ export default function RestoreDefaultsTab({ restoring, onRestoreDefaults }) {
                   if (ok) setConfirmOpen(false);
                 }}
               >
-                {restoring ? "جاري الاستعادة..." : "نعم"}
+                {restoring ? t("admin.restore.restoring") : t("admin.common.yes")}
               </button>
             </div>
           </div>

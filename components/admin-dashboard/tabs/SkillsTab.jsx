@@ -1,23 +1,23 @@
 "use client";
 
-import { ArrayBox, Field, ImageUpload, ItemShell } from "../AdminFields";
+import { ArrayBox, Field, ImageUpload, ItemShell, LocalizedField } from "../AdminFields";
 import { safeArray } from "../utils";
 
-export default function SkillsTab({ content, update, addItem, removeItem }) {
+export default function SkillsTab({ content, update, addItem, removeItem, t }) {
   return (
     <div className="grid gap-5">
-      <h2 className="admin-title">المهارات</h2>
+      <h2 className="admin-title">{t("admin.sections.skillsTitle")}</h2>
       <div className="grid gap-4 md:grid-cols-2">
-        <Field label="العنوان الصغير" value={content.skills?.label} onChange={(v) => update(["skills", "label"], v)} />
-        <Field label="العنوان الرئيسي" value={content.skills?.title} onChange={(v) => update(["skills", "title"], v)} />
+        <LocalizedField label={t("admin.fields.smallTitle")} value={content.skills?.label} onChange={(v) => update(["skills", "label"], v)} />
+        <LocalizedField label={t("admin.fields.mainTitle")} value={content.skills?.title} onChange={(v) => update(["skills", "title"], v)} />
       </div>
-      <ImageUpload label="صورة المهارات" value={content.skills?.image} onChange={(v) => update(["skills", "image"], v, { autoSave: true })} />
-      <ArrayBox title="قائمة المهارات" items={content.skills?.items} addLabel="مهارة" onAdd={() => addItem(["skills", "items"], { label: "مهارة", percent: 80 })}>
+      <ImageUpload label={t("admin.sections.skillsImage")} value={content.skills?.image} onChange={(v) => update(["skills", "image"], v, { autoSave: true })} />
+      <ArrayBox title={t("admin.sections.skillsList")} items={content.skills?.items} addLabel={t("admin.sections.skill")} onAdd={() => addItem(["skills", "items"], { label: t("admin.sections.skill"), percent: 80 })}>
         {safeArray(content.skills?.items).map((item, index) => (
-          <ItemShell key={index} title={`مهارة ${index + 1}`} onRemove={() => removeItem(["skills", "items"], index)}>
+          <ItemShell key={index} title={`${t("admin.sections.skill")} ${index + 1}`} onRemove={() => removeItem(["skills", "items"], index)}>
             <div className="grid gap-4 md:grid-cols-2">
-              <Field label="العنوان الصغير" value={item.label} onChange={(v) => update(["skills", "items", index, "label"], v)} />
-              <Field label="النسبة" type="number" value={item.percent} onChange={(v) => update(["skills", "items", index, "percent"], v)} />
+              <LocalizedField label={t("admin.fields.smallTitle")} value={item.label} onChange={(v) => update(["skills", "items", index, "label"], v)} />
+              <Field label={t("admin.fields.percent")} type="number" value={item.percent} onChange={(v) => update(["skills", "items", index, "percent"], v)} />
             </div>
           </ItemShell>
         ))}

@@ -2,6 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { defaultContent } from "@/lib/defaultContent";
+import { useTranslation } from "@/components/i18n/LanguageProvider";
+import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
+import ThemeSwitcher from "@/components/theme/ThemeSwitcher";
 import FaIcon from "../icons/FaIcon";
 import { clone } from "./utils";
 import GeneralTab from "./tabs/GeneralTab";
@@ -15,7 +18,6 @@ import MediaTab from "./tabs/MediaTab";
 import ContactTab from "./tabs/ContactTab";
 import MessagesTab from "./tabs/MessagesTab";
 import RestoreDefaultsTab from "./tabs/RestoreDefaultsTab";
-
 
 function adminJsonHeaders(extra = {}) {
   return {
@@ -32,21 +34,37 @@ function adminRequestHeaders(extra = {}) {
   };
 }
 
-const tabs = [
-  ["general", "عام", "gauge"],
-  ["hero", "الرئيسية", "football"],
-  ["overview", "اللاعب", "user"],
-  ["stats", "الإحصائيات", "chart"],
-  ["skills", "المهارات", "bolt"],
-  ["career", "المسيرة", "timeline"],
-  ["achievements", "الإنجازات", "trophy"],
-  ["media", "الصور", "images"],
-  ["contact", "التواصل", "phone"],
-  ["messages", "الرسائل", "envelope"],
-  ["restore", "استعادة الافتراضي", "restore"]
+const TAB_DEFINITIONS = [
+  ["general", "admin.tabs.general", "gauge"],
+  ["hero", "admin.tabs.hero", "football"],
+  ["overview", "admin.tabs.overview", "user"],
+  ["stats", "admin.tabs.stats", "chart"],
+  ["skills", "admin.tabs.skills", "bolt"],
+  ["career", "admin.tabs.career", "timeline"],
+  ["achievements", "admin.tabs.achievements", "trophy"],
+  ["media", "admin.tabs.media", "images"],
+  ["contact", "admin.tabs.contact", "phone"],
+  ["messages", "admin.tabs.messages", "envelope"],
+  ["restore", "admin.tabs.restore", "restore"]
 ];
 
+function FloatingAdminMessage({ message }) {
+  if (!message) return null;
+
+  return (
+    <div className="pointer-events-none fixed start-1/2 top-5 z-[120] w-[min(620px,calc(100%-24px))] -translate-x-1/2 px-1 rtl:translate-x-1/2">
+      <div className="pointer-events-auto flex items-start gap-3 rounded-[1.5rem] border border-gold/25 bg-[#15130d]/95 px-5 py-4 text-gold shadow-[0_18px_60px_rgba(0,0,0,.45)] backdrop-blur-2xl">
+        <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-2xl bg-gold text-black shadow-lg shadow-gold/10">
+          <FaIcon name="bell" className="h-4 w-4" />
+        </span>
+        <p className="flex-1 text-sm font-black leading-7 md:text-base">{message}</p>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminDashboard({ admin }) {
+  const { t, locale } = useTranslation();
   const [active, setActive] = useState("general");
   const [mobileTabsOpen, setMobileTabsOpen] = useState(false);
   const [content, setContent] = useState(defaultContent);
@@ -57,11 +75,29 @@ export default function AdminDashboard({ admin }) {
   const [status, setStatus] = useState("");
   const [confirmBox, setConfirmBox] = useState(null);
 
+  const tabs = useMemo(
+    () => TAB_DEFINITIONS.map(([key, labelKey, icon]) => [key, t(labelKey), icon]),
+    [t]
+  );
+
   useEffect(() => {
     loadAll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function confirmAction({ title, message, confirmText = "نعم", cancelText = "إلغاء", onConfirm }) {
+  useEffect(() => {
+    if (!status) return undefined;
+    const timer = window.setTimeout(() => setStatus(""), 5200);
+    return () => window.clearTimeout(timer);
+  }, [status]);
+
+  function confirmAction({
+    title,
+    message,
+    confirmText = t("admin.common.yes"),
+    cancelText = t("admin.common.cancel"),
+    onConfirm
+  }) {
     setConfirmBox({ title, message, confirmText, cancelText, onConfirm });
   }
 
@@ -85,7 +121,7 @@ export default function AdminDashboard({ admin }) {
       ]);
       const contentData = await contentResponse.json();
       const messagesData = await messagesResponse.json();
-      if (!contentResponse.ok) throw new Error(contentData.error || "تعذر تحميل محتوى الموقع حالياً.");
+      if (!contentResponse.ok) throw new Error(contentData.error || t("admin.dashboard.loadContentError"));
       setContent(contentData.data || defaultContent);
       if (messagesResponse.ok) setMessages(messagesData.messages || []);
     } catch (error) {
@@ -100,7 +136,10 @@ export default function AdminDashboard({ admin }) {
     let current = next;
     for (let i = 0; i < path.length - 1; i += 1) {
       const key = path[i];
-      if (current[key] === undefined || current[key] === null) current[key] = typeof path[i + 1] === "number" ? [] : {};
+      const shouldBeArray = typeof path[i + 1] === "number";
+      if (current[key] === undefined || current[key] === null || typeof current[key] !== "object") {
+        current[key] = shouldBeArray ? [] : {};
+      }
       current = current[key];
     }
     current[path[path.length - 1]] = value;
@@ -127,8 +166,8 @@ export default function AdminDashboard({ admin }) {
 
   function addItem(path, item) {
     confirmAction({
-      title: "تأكيد الإضافة",
-      message: "هل تريد إضافة عنصر جديد في هذا القسم؟",
+      title: t("admin.dashboard.confirmAddTitle"),
+      message: t("admin.dashboard.confirmAddMessage"),
       onConfirm: () => performAddItem(path, item)
     });
   }
@@ -143,22 +182,22 @@ export default function AdminDashboard({ admin }) {
 
   function removeItem(path, index) {
     confirmAction({
-      title: "تأكيد الحذف",
-      message: "هل تريد حذف هذا العنصر من هذا القسم؟ يمكنك مراجعة التغيير قبل حفظ التعديلات.",
+      title: t("admin.dashboard.confirmRemoveTitle"),
+      message: t("admin.dashboard.confirmRemoveMessage"),
       onConfirm: () => performRemoveItem(path, index)
     });
   }
 
-  function getCleanupMessage(cleanup) {
+  function getCleanupMessage(cleanup, mode = "save") {
     const removedDeleted = cleanup?.removedImagesCleanup?.deleted?.length || 0;
     const folderDeleted = cleanup?.folderCleanup?.deleted?.length || 0;
     const failed = (cleanup?.removedImagesCleanup?.failed?.length || 0) + (cleanup?.folderCleanup?.failed?.length || 0);
     const errors = [cleanup?.removedImagesCleanup?.error, cleanup?.folderCleanup?.error].filter(Boolean);
+    const prefix = mode === "restore" ? "restored" : "saved";
 
-    if (errors.length) return `تم حفظ التعديلات، مع وجود بعض الملفات التي تحتاج مراجعة لاحقاً.`;
-    if (failed) return "تم حفظ التعديلات، مع وجود بعض الملفات التي تحتاج مراجعة لاحقاً.";
-    if (removedDeleted || folderDeleted) return `تم حفظ التعديلات وتحديث الملفات المرتبطة بالموقع بنجاح.`;
-    return "تم حفظ التعديلات بنجاح.";
+    if (errors.length || failed) return t(`admin.dashboard.${prefix}WithCleanupIssues`);
+    if (removedDeleted || folderDeleted) return t(`admin.dashboard.${prefix}AndCleaned`);
+    return t(`admin.dashboard.${prefix}`);
   }
 
   async function saveContent(payload = content, options = {}) {
@@ -171,9 +210,9 @@ export default function AdminDashboard({ admin }) {
         body: JSON.stringify(payload)
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "تعذر حفظ التعديلات حالياً.");
+      if (!response.ok) throw new Error(data.error || t("admin.dashboard.saveError"));
       setContent(data.data || payload);
-      setStatus(options.auto ? "تم رفع الملف وتطبيق التغيير بنجاح." : getCleanupMessage(data.cleanup));
+      setStatus(options.auto ? t("admin.dashboard.uploaded") : getCleanupMessage(data.cleanup));
       return data;
     } catch (error) {
       setStatus(error.message);
@@ -185,8 +224,8 @@ export default function AdminDashboard({ admin }) {
 
   function requestSave() {
     confirmAction({
-      title: "تأكيد حفظ التعديلات",
-      message: "هل تريد تطبيق كل التعديلات الحالية على الموقع؟",
+      title: t("admin.dashboard.confirmSaveTitle"),
+      message: t("admin.dashboard.confirmSaveMessage"),
       onConfirm: saveContent
     });
   }
@@ -197,9 +236,9 @@ export default function AdminDashboard({ admin }) {
     try {
       const response = await fetch("/api/admin/content/reset", { method: "POST", headers: adminRequestHeaders() });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "تعذرت استعادة الإعدادات حالياً.");
+      if (!response.ok) throw new Error(data.error || t("admin.dashboard.restoreError"));
       setContent(data.data || defaultContent);
-      setStatus(getCleanupMessage(data.cleanup).replace("تم حفظ التعديلات", "تمت استعادة الإعدادات الافتراضية"));
+      setStatus(getCleanupMessage(data.cleanup, "restore"));
       return true;
     } catch (error) {
       setStatus(error.message);
@@ -216,8 +255,8 @@ export default function AdminDashboard({ admin }) {
 
   function logout() {
     confirmAction({
-      title: "تأكيد الخروج",
-      message: "هل تريد تسجيل الخروج من صفحة الإدارة؟",
+      title: t("admin.dashboard.confirmLogoutTitle"),
+      message: t("admin.dashboard.confirmLogoutMessage"),
       onConfirm: performLogout
     });
   }
@@ -233,8 +272,8 @@ export default function AdminDashboard({ admin }) {
 
   function patchMessage(id, status) {
     confirmAction({
-      title: "تأكيد تعديل حالة الرسالة",
-      message: status === "read" ? "هل تريد تعليم هذه الرسالة كمقروءة؟" : "هل تريد تعليم هذه الرسالة كجديدة؟",
+      title: t("admin.dashboard.confirmMessageStatusTitle"),
+      message: status === "read" ? t("admin.dashboard.markReadConfirm") : t("admin.dashboard.markNewConfirm"),
       onConfirm: () => performPatchMessage(id, status)
     });
   }
@@ -243,14 +282,14 @@ export default function AdminDashboard({ admin }) {
     const response = await fetch(`/api/admin/messages/${id}`, { method: "DELETE", headers: adminRequestHeaders() });
     if (response.ok) {
       setMessages((current) => current.filter((message) => message._id !== id));
-      setStatus("تم حذف الرسالة بنجاح.");
+      setStatus(t("admin.dashboard.messageDeleted"));
     }
   }
 
   function deleteMessage(id) {
     confirmAction({
-      title: "تأكيد حذف الرسالة",
-      message: "هل تريد حذف هذه الرسالة نهائياً؟",
+      title: t("admin.dashboard.confirmDeleteMessageTitle"),
+      message: t("admin.dashboard.confirmDeleteMessage"),
       onConfirm: () => performDeleteMessage(id)
     });
   }
@@ -260,7 +299,7 @@ export default function AdminDashboard({ admin }) {
     unread: messages.filter((message) => message.status === "new").length
   }), [messages]);
 
-  const sharedTabProps = { content, update, addItem, removeItem, confirmAction };
+  const sharedTabProps = { content, update, addItem, removeItem, confirmAction, t, locale };
 
   const activeTab = tabs.find(([key]) => key === active) || tabs[0];
 
@@ -278,14 +317,14 @@ export default function AdminDashboard({ admin }) {
     if (active === "career") return <CareerTab {...sharedTabProps} />;
     if (active === "achievements") return <AchievementsTab {...sharedTabProps} />;
     if (active === "media") return <MediaTab {...sharedTabProps} />;
-    if (active === "contact") return <ContactTab content={content} update={update} />;
-    if (active === "messages") return <MessagesTab messages={messages} loadAll={loadAll} patchMessage={patchMessage} deleteMessage={deleteMessage} />;
-    if (active === "restore") return <RestoreDefaultsTab restoring={restoring} onRestoreDefaults={restoreDefaults} />;
+    if (active === "contact") return <ContactTab content={content} update={update} t={t} locale={locale} />;
+    if (active === "messages") return <MessagesTab messages={messages} loadAll={loadAll} patchMessage={patchMessage} deleteMessage={deleteMessage} t={t} locale={locale} />;
+    if (active === "restore") return <RestoreDefaultsTab restoring={restoring} onRestoreDefaults={restoreDefaults} t={t} locale={locale} />;
     return null;
   }
 
   if (loading) {
-    return <div className="grid min-h-screen place-items-center text-xl font-black text-white">جاري تجهيز صفحة الإدارة...</div>;
+    return <div className="grid min-h-screen place-items-center text-xl font-black text-white">{t("admin.dashboard.loading")}</div>;
   }
 
   return (
@@ -293,24 +332,26 @@ export default function AdminDashboard({ admin }) {
       <div className="mx-auto max-w-7xl">
         <header className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-[2rem] border border-white/10 bg-white/[.07] p-5 shadow-glass backdrop-blur-xl">
           <div>
-            <p className="inline-flex items-center gap-2 text-sm font-black text-gold"><FaIcon name="gauge" className="h-4 w-4" /> إدارة الموقع</p>
-            <h1 className="text-3xl font-black">إدارة محتوى الموقع</h1>
+            <p className="inline-flex items-center gap-2 text-sm font-black text-gold"><FaIcon name="gauge" className="h-4 w-4" /> {t("admin.dashboard.pageLabel")}</p>
+            <h1 className="text-3xl font-black">{t("admin.dashboard.title")}</h1>
           </div>
           <div className="flex flex-wrap gap-3">
-            <a href="/" target="_blank" className="btn-muted"><span className="inline-flex items-center gap-2"><FaIcon name="eye" className="h-4 w-4" />عرض الموقع</span></a>
-            <button onClick={requestSave} disabled={saving} className="btn-red"><span className="inline-flex items-center gap-2"><FaIcon name="save" className="h-4 w-4" />{saving ? "جاري الحفظ..." : "حفظ التعديلات"}</span></button>
-            <button onClick={logout} className="btn-muted"><span className="inline-flex items-center gap-2"><FaIcon name="login" className="h-4 w-4" />خروج</span></button>
+            <ThemeSwitcher />
+            <LanguageSwitcher />
+            <a href="/" target="_blank" className="btn-muted"><span className="inline-flex items-center gap-2"><FaIcon name="eye" className="h-4 w-4" />{t("admin.dashboard.viewSite")}</span></a>
+            <button onClick={requestSave} disabled={saving} className="btn-red"><span className="inline-flex items-center gap-2"><FaIcon name="save" className="h-4 w-4" />{saving ? t("admin.dashboard.saving") : t("admin.dashboard.save")}</span></button>
+            <button onClick={logout} className="btn-muted"><span className="inline-flex items-center gap-2"><FaIcon name="login" className="h-4 w-4" />{t("admin.dashboard.logout")}</span></button>
           </div>
         </header>
 
-        {status && <div className="mb-5 rounded-3xl border border-gold/20 bg-gold/10 px-5 py-4 font-black text-gold">{status}</div>}
+        <FloatingAdminMessage message={status} />
 
         <div className="relative mb-5 lg:hidden">
           <button
             type="button"
             onClick={() => setMobileTabsOpen((current) => !current)}
             className="flex w-full items-center justify-between gap-3 rounded-[1.7rem] border border-white/10 bg-gradient-to-br from-white/[.12] to-white/[.04] p-3 text-start shadow-glass backdrop-blur-xl transition hover:border-gold/30"
-            aria-label="اختيار قسم الإدارة"
+            aria-label={t("admin.common.chooseSection")}
             aria-expanded={mobileTabsOpen}
           >
             <span className="flex min-w-0 items-center gap-3">
@@ -318,23 +359,23 @@ export default function AdminDashboard({ admin }) {
                 <FaIcon name={activeTab[2]} className="h-5 w-5" />
               </span>
               <span className="min-w-0">
-                <span className="block text-[11px] font-black uppercase tracking-[.2em] text-white/45">القسم الحالي</span>
+                <span className="block text-[11px] font-black uppercase tracking-[.2em] text-white/45">{t("admin.common.currentSection")}</span>
                 <span className="block truncate text-lg font-black text-white">{activeTab[1]}</span>
               </span>
             </span>
             <span className="flex items-center gap-2 rounded-2xl border border-white/10 bg-black/20 px-3 py-2 text-xs font-black text-gold">
-              تغيير
+              {t("admin.common.change")}
               <FaIcon name="chevron-down" className={`h-3 w-3 transition ${mobileTabsOpen ? "rotate-180" : ""}`} />
             </span>
           </button>
 
           {mobileTabsOpen && (
-            <div className="absolute left-0 right-0 top-[calc(100%+10px)] z-50 rounded-[1.7rem] border border-white/10 bg-[#07100c]/95 p-3 shadow-[0_24px_70px_rgba(0,0,0,.45)] backdrop-blur-2xl">
+            <div className="absolute inset-x-0 top-[calc(100%+10px)] z-50 rounded-[1.7rem] border border-white/10 bg-[#07100c]/95 p-3 shadow-[0_24px_70px_rgba(0,0,0,.45)] backdrop-blur-2xl">
               <div className="mb-3 flex items-center justify-between gap-3 rounded-[1.25rem] bg-white/[.05] px-4 py-3">
-                <span className="text-sm font-black text-white/80">اختر القسم المطلوب تعديله</span>
-                <span className="rounded-full bg-gold/15 px-3 py-1 text-xs font-black text-gold">{tabs.length} أقسام</span>
+                <span className="text-sm font-black text-white/80">{t("admin.common.chooseSection")}</span>
+                <span className="rounded-full bg-gold/15 px-3 py-1 text-xs font-black text-gold">{tabs.length} {t("admin.common.sectionsCount")}</span>
               </div>
-              <div className="grid max-h-[62vh] grid-cols-2 gap-2 overflow-y-auto pr-1 sm:grid-cols-3">
+              <div className="grid max-h-[62vh] grid-cols-2 gap-2 overflow-y-auto pe-1 sm:grid-cols-3">
                 {tabs.map(([key, label, icon]) => (
                   <button
                     key={key}
@@ -357,12 +398,12 @@ export default function AdminDashboard({ admin }) {
               <div className="rounded-3xl bg-black/20 p-4 text-center">
                 <FaIcon name="envelope" className="mx-auto mb-2 h-5 w-5 text-white/55" />
                 <strong className="block text-2xl">{messageStats.total}</strong>
-                <span className="text-xs text-white/55">رسالة</span>
+                <span className="text-xs text-white/55">{t("admin.dashboard.messages")}</span>
               </div>
               <div className="rounded-3xl bg-black/20 p-4 text-center">
                 <FaIcon name="message" className="mx-auto mb-2 h-5 w-5 text-gold" />
                 <strong className="block text-2xl text-gold">{messageStats.unread}</strong>
-                <span className="text-xs text-white/55">جديد</span>
+                <span className="text-xs text-white/55">{t("admin.dashboard.newMessages")}</span>
               </div>
             </div>
             <nav className="grid gap-2">
@@ -394,8 +435,8 @@ export default function AdminDashboard({ admin }) {
               </div>
             </div>
             <div className="flex flex-wrap justify-end gap-3">
-              <button type="button" className="btn-muted" onClick={closeConfirm}>{confirmBox.cancelText || "إلغاء"}</button>
-              <button type="button" className="btn-red" onClick={runConfirmedAction}>{confirmBox.confirmText || "نعم"}</button>
+              <button type="button" className="btn-muted" onClick={closeConfirm}>{confirmBox.cancelText || t("admin.common.cancel")}</button>
+              <button type="button" className="btn-red" onClick={runConfirmedAction}>{confirmBox.confirmText || t("admin.common.yes")}</button>
             </div>
           </div>
         </div>

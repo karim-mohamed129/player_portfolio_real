@@ -1,3 +1,5 @@
+"use client";
+
 import Header from "./Header";
 import Footer from "./Footer";
 import HeroSection from "./sections/HeroSection";
@@ -10,9 +12,12 @@ import MediaSection from "./sections/MediaSection";
 import ContactSection from "./sections/ContactSection";
 import ContactFormSection from "./sections/ContactFormSection";
 import SiteFavicon from "./SiteFavicon";
+import { useTranslation } from "@/components/i18n/LanguageProvider";
+import { getLocalizedContent } from "@/lib/i18nContent";
 
 export default function PublicSite({ initialContent }) {
-  const content = initialContent || {};
+  const { locale } = useTranslation();
+  const content = getLocalizedContent(initialContent || {}, locale);
 
   return (
     <main className="min-h-screen text-white">

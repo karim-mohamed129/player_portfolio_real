@@ -1,22 +1,22 @@
 "use client";
 
-import { ArrayBox, Field, ImageUpload, ItemShell, TextArea } from "../AdminFields";
+import { ArrayBox, ImageUpload, ItemShell, LocalizedField, LocalizedTextArea } from "../AdminFields";
 import { safeArray } from "../utils";
 
-export default function MediaTab({ content, update, addItem, removeItem }) {
+export default function MediaTab({ content, update, addItem, removeItem, t }) {
   return (
     <div className="grid gap-5">
-      <h2 className="admin-title">معرض الصور</h2>
+      <h2 className="admin-title">{t("admin.sections.mediaTitle")}</h2>
       <div className="grid gap-4 md:grid-cols-2">
-        <Field label="العنوان الصغير" value={content.media?.label} onChange={(v) => update(["media", "label"], v)} />
-        <Field label="العنوان الرئيسي" value={content.media?.title} onChange={(v) => update(["media", "title"], v)} />
+        <LocalizedField label={t("admin.fields.smallTitle")} value={content.media?.label} onChange={(v) => update(["media", "label"], v)} />
+        <LocalizedField label={t("admin.fields.mainTitle")} value={content.media?.title} onChange={(v) => update(["media", "title"], v)} />
       </div>
-      <TextArea label="الوصف المختصر" value={content.media?.summary} onChange={(v) => update(["media", "summary"], v)} />
-      <ArrayBox title="صور المعرض" items={content.media?.items} addLabel="صورة" onAdd={() => addItem(["media", "items"], { image: "", alt: "صورة" })}>
+      <LocalizedTextArea label={t("admin.fields.shortDescription")} value={content.media?.summary} onChange={(v) => update(["media", "summary"], v)} />
+      <ArrayBox title={t("admin.sections.galleryImages")} items={content.media?.items} addLabel={t("admin.fields.image")} onAdd={() => addItem(["media", "items"], { image: "", alt: t("admin.fields.image") })}>
         {safeArray(content.media?.items).map((item, index) => (
-          <ItemShell key={index} title={`صورة ${index + 1}`} onRemove={() => removeItem(["media", "items"], index)}>
-            <Field label="Alt Text" value={item.alt} onChange={(v) => update(["media", "items", index, "alt"], v)} />
-            <ImageUpload label="صورة" value={item.image} onChange={(v) => update(["media", "items", index, "image"], v, { autoSave: true })} />
+          <ItemShell key={index} title={`${t("admin.fields.image")} ${index + 1}`} onRemove={() => removeItem(["media", "items"], index)}>
+            <LocalizedField label={t("admin.fields.altText")} value={item.alt} onChange={(v) => update(["media", "items", index, "alt"], v)} />
+            <ImageUpload label={t("admin.fields.image")} value={item.image} onChange={(v) => update(["media", "items", index, "image"], v, { autoSave: true })} />
           </ItemShell>
         ))}
       </ArrayBox>

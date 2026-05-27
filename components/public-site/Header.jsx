@@ -1,12 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
+import ThemeSwitcher from "@/components/theme/ThemeSwitcher";
+import { useTranslation } from "@/components/i18n/LanguageProvider";
 import FaIcon from "../icons/FaIcon";
 import { IconCircle } from "./ui";
 import { safeArray } from "./utils";
 
 export default function Header({ site, nav }) {
   const [open, setOpen] = useState(false);
+  const { t } = useTranslation();
   const visibleNav = safeArray(nav).filter((item) => !item.hidden);
 
   function goToSection(value) {
@@ -29,24 +33,28 @@ export default function Header({ site, nav }) {
           <span className="truncate">{site?.logoText || "MH10"}</span>
         </a>
 
-        <button
-          type="button"
-          onClick={() => setOpen((current) => !current)}
-          className="inline-flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[.08] px-4 py-3 text-sm font-black text-white shadow-glass transition hover:bg-white/[.12] md:hidden"
-          aria-label="فتح القائمة العلوية"
-          aria-expanded={open}
-        >
-          <span className="grid h-8 w-8 place-items-center rounded-xl bg-gold text-black">
-            <FaIcon name="bars" className="h-4 w-4" />
-          </span>
-          <span>القائمة</span>
-          <FaIcon name="chevron-down" className={`h-3 w-3 text-gold transition ${open ? "rotate-180" : ""}`} />
-        </button>
+        <div className="flex items-center gap-2 md:hidden">
+          <ThemeSwitcher compact />
+          <LanguageSwitcher compact />
+          <button
+            type="button"
+            onClick={() => setOpen((current) => !current)}
+            className="inline-flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[.08] px-4 py-3 text-sm font-black text-white shadow-glass transition hover:bg-white/[.12]"
+            aria-label={t("nav.menuAria")}
+            aria-expanded={open}
+          >
+            <span className="grid h-8 w-8 place-items-center rounded-xl bg-gold text-black">
+              <FaIcon name="bars" className="h-4 w-4" />
+            </span>
+            <span className="hidden sm:inline">{t("nav.menu")}</span>
+            <FaIcon name="chevron-down" className={`h-3 w-3 text-gold transition ${open ? "rotate-180" : ""}`} />
+          </button>
+        </div>
 
         {open && (
-          <div className="absolute left-0 right-0 top-[calc(100%+10px)] z-50 overflow-hidden rounded-[1.7rem] border border-white/10 bg-[#07100c]/95 p-2 shadow-[0_24px_70px_rgba(0,0,0,.45)] backdrop-blur-2xl md:hidden">
+          <div className="absolute start-0 end-0 top-[calc(100%+10px)] z-50 overflow-hidden rounded-[1.7rem] border border-white/10 bg-[#07100c]/95 p-2 shadow-[0_24px_70px_rgba(0,0,0,.45)] backdrop-blur-2xl md:hidden">
             <div className="mb-2 rounded-[1.3rem] border border-white/10 bg-white/[.06] px-4 py-3 text-center text-xs font-black text-white/60">
-              اختار القسم المطلوب من الموقع
+              {t("nav.chooseSection")}
             </div>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
               {visibleNav.map((item, index) => (
@@ -63,15 +71,19 @@ export default function Header({ site, nav }) {
           </div>
         )}
 
-        <ul className="hidden md:flex md:flex-row md:items-center md:gap-6">
-          {visibleNav.map((item, index) => (
-            <li key={`${item.href}-${index}`}>
-              <a className="block rounded-2xl px-3 py-3 text-sm font-bold text-white/70 transition hover:bg-white/10 hover:text-white md:p-0 md:hover:bg-transparent" href={item.href || "#"}>
-                {item.label}
-              </a>
-            </li>
-          ))}
-        </ul>
+        <div className="hidden items-center gap-6 md:flex">
+          <ul className="flex flex-row items-center gap-6">
+            {visibleNav.map((item, index) => (
+              <li key={`${item.href}-${index}`}>
+                <a className="block rounded-2xl px-3 py-3 text-sm font-bold text-white/70 transition hover:bg-white/10 hover:text-white md:p-0 md:hover:bg-transparent" href={item.href || "#"}>
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+          <ThemeSwitcher />
+          <LanguageSwitcher />
+        </div>
       </nav>
     </header>
   );

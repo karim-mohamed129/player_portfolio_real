@@ -2,7 +2,7 @@ import FaIcon from "../icons/FaIcon";
 
 export function SectionBadge({ icon, children }) {
   return (
-    <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-gold/25 bg-gold/10 px-4 py-2 text-sm font-black text-gold">
+    <span className="section-badge mb-5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-black">
       {icon && <FaIcon name={icon} className="h-4 w-4" />}
       {children}
     </span>
