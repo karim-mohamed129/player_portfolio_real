@@ -11,7 +11,7 @@ export default function StatsTab({ content, update, addItem, removeItem, t }) {
         <LocalizedField label={t("admin.fields.smallTitle")} value={content.stats?.label} onChange={(v) => update(["stats", "label"], v)} />
         <LocalizedField label={t("admin.fields.mainTitle")} value={content.stats?.title} onChange={(v) => update(["stats", "title"], v)} />
       </div>
-      <ArrayBox title={t("admin.sections.statsCards")} items={content.stats?.items} addLabel={t("admin.sections.stat")} onAdd={() => addItem(["stats", "items"], { icon: "chart", value: "0", label: t("admin.sections.stat") })}>
+      <ArrayBox title={t("admin.sections.statsCards")} items={content.stats?.items} addLabel={t("admin.sections.stat")} onAdd={() => addItem(["stats", "items"], { icon: "chart", value: "", label: { ar: "", en: "" } })}>
         {safeArray(content.stats?.items).map((item, index) => (
           <ItemShell key={index} title={`${t("admin.sections.stat")} ${index + 1}`} onRemove={() => removeItem(["stats", "items"], index)}>
             <div className="grid gap-4 md:grid-cols-2">

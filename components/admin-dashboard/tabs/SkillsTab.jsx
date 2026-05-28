@@ -12,7 +12,7 @@ export default function SkillsTab({ content, update, addItem, removeItem, t }) {
         <LocalizedField label={t("admin.fields.mainTitle")} value={content.skills?.title} onChange={(v) => update(["skills", "title"], v)} />
       </div>
       <ImageUpload label={t("admin.sections.skillsImage")} value={content.skills?.image} onChange={(v) => update(["skills", "image"], v, { autoSave: true })} />
-      <ArrayBox title={t("admin.sections.skillsList")} items={content.skills?.items} addLabel={t("admin.sections.skill")} onAdd={() => addItem(["skills", "items"], { label: t("admin.sections.skill"), percent: 80 })}>
+      <ArrayBox title={t("admin.sections.skillsList")} items={content.skills?.items} addLabel={t("admin.sections.skill")} onAdd={() => addItem(["skills", "items"], { label: { ar: "", en: "" }, percent: "" })}>
         {safeArray(content.skills?.items).map((item, index) => (
           <ItemShell key={index} title={`${t("admin.sections.skill")} ${index + 1}`} onRemove={() => removeItem(["skills", "items"], index)}>
             <div className="grid gap-4 md:grid-cols-2">

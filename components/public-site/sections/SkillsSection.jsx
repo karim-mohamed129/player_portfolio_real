@@ -5,7 +5,7 @@ export default function SkillsSection({ skills }) {
   return (
     <section className="py-24" id="skills">
       <div className="mx-auto grid w-[min(1140px,calc(100%-32px))] items-center gap-10 lg:grid-cols-[.9fr_1.1fr]">
-        {skills?.image && <img src={skills.image} alt="skills" className="h-[430px] rounded-[2rem] border border-white/15 object-cover shadow-glass md:h-[560px]" />}
+        {skills?.image && <img src={skills.image} alt={skills?.title || "Skills"} className="site-image-cover h-[430px] rounded-[2rem] border border-white/15 shadow-glass md:h-[560px]" loading="lazy" />}
         <div>
           <SectionBadge icon="bolt">{skills?.label}</SectionBadge>
           <h2 className="mb-6 text-3xl font-black leading-tight md:text-5xl">{skills?.title}</h2>

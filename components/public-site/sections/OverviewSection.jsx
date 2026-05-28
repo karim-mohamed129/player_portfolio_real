@@ -16,7 +16,17 @@ export default function OverviewSection({ overview }) {
           <p className="text-lg leading-9 text-white/70">{overview?.summary}</p>
         </div>
         <div className="glass-card rounded-[2rem] p-6">
-          {overview?.image && <img src={overview.image} alt={t("contact.profileAlt")} className="mx-auto mb-6 block max-h-72 w-full max-w-[420px] rounded-3xl border border-white/15 bg-white/5 object-contain p-2" />}
+          {overview?.image && (
+            <div className="mx-auto mb-6 flex h-72 max-w-[420px] items-center justify-center overflow-hidden rounded-3xl border border-white/15 bg-white/5 p-3">
+              <img
+                src={overview.image}
+                alt={overview?.title || t("contact.profileAlt")}
+                className="h-full w-full object-contain object-center"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          )}
           {safeArray(overview?.rows).map((row, index) => (
             <div key={index} className="flex items-center justify-between gap-4 border-b border-white/10 py-4 last:border-0">
               <span className="text-white/60">{row.label}</span>

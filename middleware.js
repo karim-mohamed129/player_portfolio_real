@@ -53,7 +53,7 @@ function buildCsp(nonce) {
     "form-action 'self'",
     "frame-ancestors 'none'",
     "object-src 'none'",
-    "img-src 'self' data: blob: https://res.cloudinary.com https://images.unsplash.com https://challenges.cloudflare.com",
+    "img-src 'self' data: blob: https://res.cloudinary.com https://challenges.cloudflare.com",
     "font-src 'self' data: https://cdn.jsdelivr.net",
     "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
     `script-src 'self' 'nonce-${nonce}' https://challenges.cloudflare.com${isProd ? "" : " 'unsafe-eval'"}`,

@@ -6,6 +6,20 @@ import FaIcon from "../icons/FaIcon";
 import { safeArray } from "./utils";
 import { getLocalizedInputValue, getLocalizedText, setLocalizedInputValue } from "@/lib/localizedText";
 
+
+const IMAGE_MAX_SIZE_BYTES = 10 * 1024 * 1024;
+const FILE_MAX_SIZE_BYTES = 12 * 1024 * 1024;
+
+async function readJsonResponse(response, fallbackError = "Unable to complete the request right now. Please try again.") {
+  const text = await response.text();
+  if (!text) return {};
+  try {
+    return JSON.parse(text);
+  } catch {
+    return { error: response.ok ? "" : fallbackError };
+  }
+}
+
 const AVAILABLE_ICON_NAMES = [
   "football",
   "shirt",
@@ -274,8 +288,8 @@ export function ImageUpload({ label, value, onChange }) {
       formData.append("file", file);
       if (value) formData.append("oldUrl", value);
       const response = await fetch("/api/admin/upload", { method: "POST", headers: adminRequestHeaders(), body: formData });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Unable to upload the file right now. Please try again.");
+      const data = await readJsonResponse(response, t("admin.common.imageTooLarge"));
+      if (!response.ok) throw new Error(data.error || t("admin.common.uploadFailed"));
       await applyChange(data.secure_url);
     } catch (err) {
       setError(err.message);
@@ -290,6 +304,11 @@ export function ImageUpload({ label, value, onChange }) {
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
+
+    if (file.size > IMAGE_MAX_SIZE_BYTES) {
+      setError(t("admin.common.imageTooLarge"));
+      return;
+    }
 
     if (hasFile) {
       setPendingFile(file);
@@ -392,8 +411,8 @@ export function FileUpload({ label, value, onChange, accept = "application/pdf,.
       formData.append("file", file);
       if (value) formData.append("oldUrl", value);
       const response = await fetch("/api/admin/upload", { method: "POST", headers: adminRequestHeaders(), body: formData });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Unable to upload the file right now. Please try again.");
+      const data = await readJsonResponse(response, t("admin.common.fileTooLarge"));
+      if (!response.ok) throw new Error(data.error || t("admin.common.uploadFailed"));
       await applyChange(data.secure_url);
     } catch (err) {
       setError(err.message);
@@ -408,6 +427,11 @@ export function FileUpload({ label, value, onChange, accept = "application/pdf,.
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
+
+    if (file.size > FILE_MAX_SIZE_BYTES) {
+      setError(t("admin.common.fileTooLarge"));
+      return;
+    }
 
     if (hasFile) {
       setPendingFile(file);

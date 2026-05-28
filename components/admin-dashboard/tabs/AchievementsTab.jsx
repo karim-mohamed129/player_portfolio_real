@@ -11,7 +11,7 @@ export default function AchievementsTab({ content, update, addItem, removeItem, 
         <LocalizedField label={t("admin.fields.smallTitle")} value={content.achievements?.label} onChange={(v) => update(["achievements", "label"], v)} />
         <LocalizedField label={t("admin.fields.mainTitle")} value={content.achievements?.title} onChange={(v) => update(["achievements", "title"], v)} />
       </div>
-      <ArrayBox title={t("admin.sections.achievementsCards")} items={content.achievements?.items} addLabel={t("admin.sections.achievement")} onAdd={() => addItem(["achievements", "items"], { icon: "trophy", title: t("admin.sections.achievement"), description: t("admin.fields.description"), image: "" })}>
+      <ArrayBox title={t("admin.sections.achievementsCards")} items={content.achievements?.items} addLabel={t("admin.sections.achievement")} onAdd={() => addItem(["achievements", "items"], { icon: "trophy", title: { ar: "", en: "" }, description: { ar: "", en: "" }, image: "" })}>
         {safeArray(content.achievements?.items).map((item, index) => (
           <ItemShell key={index} title={item.title || `${t("admin.sections.achievement")} ${index + 1}`} onRemove={() => removeItem(["achievements", "items"], index)}>
             <div className="grid gap-4 md:grid-cols-2">

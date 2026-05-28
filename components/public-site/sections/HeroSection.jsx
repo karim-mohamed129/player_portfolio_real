@@ -5,12 +5,23 @@ import FaIcon from "../../icons/FaIcon";
 import { ButtonLink, SectionBadge } from "../ui";
 import { safeArray } from "../utils";
 
+const PLAYER_IMAGE_FALLBACK = "/assets/player/profile.webp";
+
 export default function HeroSection({ hero }) {
   const { t } = useTranslation();
+  const playerAlt = [hero?.name, hero?.position].filter(Boolean).join(" - ") || t("hero.playerAlt");
+  const playerImage = hero?.playerImage || PLAYER_IMAGE_FALLBACK;
+
+  function handlePlayerImageError(event) {
+    const image = event.currentTarget;
+    if (image.dataset.fallbackApplied === "true") return;
+    image.dataset.fallbackApplied = "true";
+    image.src = PLAYER_IMAGE_FALLBACK;
+  }
 
   return (
     <section id="home" className="hero-section relative flex min-h-[calc(100vh-76px)] items-center overflow-hidden">
-      {hero?.backgroundImage && <img src={hero.backgroundImage} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover opacity-45" />}
+      {hero?.backgroundImage && <img src={hero.backgroundImage} alt="" aria-hidden="true" className="site-image-cover absolute inset-0 h-full w-full opacity-45" />}
       <div className="hero-overlay absolute inset-0" />
       <div className="hero-fade pointer-events-none absolute inset-x-[-10%] bottom-[-20%] h-80" />
       <div className="relative mx-auto grid w-[min(1140px,calc(100%-32px))] items-center gap-12 py-16 lg:grid-cols-[1.05fr_.95fr]">
@@ -38,9 +49,20 @@ export default function HeroSection({ hero }) {
           </div>
         </div>
         <aside>
-          <div className="hero-photo-card relative overflow-hidden rounded-[2.25rem] border shadow-glass lg:-rotate-1 rtl:lg:rotate-1">
-            {hero?.playerImage && <img src={hero.playerImage} alt={hero?.name || t("hero.playerAlt")} className="h-[430px] w-full object-cover md:h-[580px]" />}
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/85" />
+          <div className="hero-photo-card relative overflow-hidden rounded-[2.25rem] border shadow-glass">
+            <div className="flex h-[430px] items-center justify-center bg-black/20 p-3 md:h-[580px]">
+              <img
+                key={playerImage}
+                src={playerImage}
+                alt={playerAlt}
+                className="h-full w-full object-contain object-center"
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+                onError={handlePlayerImageError}
+              />
+            </div>
+            <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-transparent to-black/85" />
             <div className="hero-status-card absolute bottom-6 start-6 end-6 flex items-center gap-3 rounded-3xl border p-4 backdrop-blur-xl">
               <span className="h-4 w-4 rounded-full bg-grass shadow-[0_0_0_10px_rgba(17,155,89,.16)]" />
               <div>

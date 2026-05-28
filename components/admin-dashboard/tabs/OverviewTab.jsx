@@ -13,7 +13,7 @@ export default function OverviewTab({ content, update, addItem, removeItem, t })
       </div>
       <LocalizedTextArea label={t("admin.fields.shortDescription")} value={content.overview?.summary} onChange={(v) => update(["overview", "summary"], v)} />
       <ImageUpload label={t("admin.fields.playerImage")} value={content.overview?.image} onChange={(v) => update(["overview", "image"], v, { autoSave: true })} />
-      <ArrayBox title={t("admin.sections.overviewRows")} items={content.overview?.rows} addLabel={t("admin.sections.overviewRow")} onAdd={() => addItem(["overview", "rows"], { label: t("admin.sections.overviewRow"), value: t("admin.fields.value") })}>
+      <ArrayBox title={t("admin.sections.overviewRows")} items={content.overview?.rows} addLabel={t("admin.sections.overviewRow")} onAdd={() => addItem(["overview", "rows"], { label: { ar: "", en: "" }, value: { ar: "", en: "" } })}>
         {safeArray(content.overview?.rows).map((row, index) => (
           <ItemShell key={index} title={`${t("admin.sections.overviewRow")} ${index + 1}`} onRemove={() => removeItem(["overview", "rows"], index)}>
             <div className="grid gap-4 md:grid-cols-2">

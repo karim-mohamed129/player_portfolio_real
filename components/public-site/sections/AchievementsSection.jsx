@@ -13,7 +13,7 @@ export default function AchievementsSection({ achievements }) {
         <div className="grid gap-5 md:grid-cols-3">
           {safeArray(achievements?.items).map((item, index) => (
             <article key={index} className="glass-card overflow-hidden rounded-[2rem]">
-              {item.image && <img src={item.image} alt={item.title} className="h-56 w-full object-cover" />}
+              {item.image && <img src={item.image} alt={item.title || `${achievements?.title || "Achievement"} ${index + 1}`} className="site-image-cover h-56" loading="lazy" />}
               <div className="p-6">
                 <div className="mb-4 inline-grid h-14 w-14 place-items-center rounded-3xl bg-gold/10 text-gold">
                   <FaIcon name={item.icon || "trophy"} className="h-7 w-7" />

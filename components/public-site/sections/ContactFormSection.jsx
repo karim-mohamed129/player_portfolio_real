@@ -73,7 +73,7 @@ export default function ContactFormSection({ contact }) {
           <div className="grid gap-8 rounded-[2.25rem] border border-white/15 bg-white/[.075] p-6 shadow-glass backdrop-blur-xl lg:grid-cols-[.9fr_1.1fr] lg:p-10">
             <div>
               {contact?.messageImage && (
-                <img src={contact.messageImage} alt={t("contact.imageAlt")} className="mb-6 h-64 w-full rounded-3xl border border-white/15 object-cover shadow-2xl" />
+                <img src={contact.messageImage} alt={contact?.messageTitle || t("contact.imageAlt")} className="site-image-cover mb-6 h-64 rounded-3xl border border-white/15 shadow-2xl" loading="lazy" />
               )}
               <SectionBadge icon="envelope">{contact?.messageLabel || t("form.directMessage")}</SectionBadge>
               <h2 className="mb-3 text-3xl font-black leading-tight md:text-5xl">{contact?.messageTitle || t("form.title")}</h2>

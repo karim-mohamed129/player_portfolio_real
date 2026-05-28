@@ -11,7 +11,7 @@ export default function CareerTab({ content, update, addItem, removeItem, t }) {
         <LocalizedField label={t("admin.fields.smallTitle")} value={content.career?.label} onChange={(v) => update(["career", "label"], v)} />
         <LocalizedField label={t("admin.fields.mainTitle")} value={content.career?.title} onChange={(v) => update(["career", "title"], v)} />
       </div>
-      <ArrayBox title={t("admin.sections.careerSteps")} items={content.career?.items} addLabel={t("admin.sections.stage")} onAdd={() => addItem(["career", "items"], { year: "2026", title: t("admin.sections.stage"), description: t("admin.fields.description"), image: "" })}>
+      <ArrayBox title={t("admin.sections.careerSteps")} items={content.career?.items} addLabel={t("admin.sections.stage")} onAdd={() => addItem(["career", "items"], { year: "", title: { ar: "", en: "" }, description: { ar: "", en: "" }, image: "" })}>
         {safeArray(content.career?.items).map((item, index) => (
           <ItemShell key={index} title={item.title || `${item.year || t("admin.sections.stage")}`} onRemove={() => removeItem(["career", "items"], index)}>
             <div className="grid gap-4 md:grid-cols-2">

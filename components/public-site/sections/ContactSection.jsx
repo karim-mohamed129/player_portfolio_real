@@ -10,7 +10,7 @@ export default function ContactSection({ contact }) {
   return (
     <section className="py-24" id="contact">
       <div className="mx-auto grid w-[min(1140px,calc(100%-32px))] items-center gap-7 rounded-[2.25rem] border border-white/15 bg-gradient-to-br from-danger/25 to-grass/20 p-7 shadow-glass backdrop-blur-xl lg:grid-cols-[260px_1fr_auto] lg:p-10">
-        {contact?.image && <img src={contact.image} alt={t("contact.imageAlt")} className="h-64 rounded-3xl border border-white/15 object-cover lg:h-60" />}
+        {contact?.image && <img src={contact.image} alt={contact?.title || t("contact.imageAlt")} className="site-image-cover h-64 rounded-3xl border border-white/15 lg:h-60" loading="lazy" />}
         <div>
           <SectionBadge icon="file">{contact?.label}</SectionBadge>
           <h2 className="mb-3 text-3xl font-black leading-tight md:text-5xl">{contact?.title}</h2>

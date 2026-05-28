@@ -27,7 +27,7 @@ export default function HeroTab({ content, update, addItem, removeItem, t }) {
       <ImageUpload label={t("admin.fields.backgroundImage")} value={content.hero?.backgroundImage} onChange={(v) => update(["hero", "backgroundImage"], v, { autoSave: true })} />
       <ImageUpload label={t("admin.fields.playerImage")} value={content.hero?.playerImage} onChange={(v) => update(["hero", "playerImage"], v, { autoSave: true })} />
       <FileUpload label={t("admin.fields.cvFile")} value={content.hero?.primaryButtonUrl} onChange={(v) => update(["hero", "primaryButtonUrl"], v, { autoSave: true })} />
-      <ArrayBox title={t("admin.sections.quickInfo")} items={content.hero?.quickInfo} addLabel={t("admin.common.add")} onAdd={() => addItem(["hero", "quickInfo"], { icon: "football", label: t("admin.fields.smallTitle"), value: t("admin.fields.value") })}>
+      <ArrayBox title={t("admin.sections.quickInfo")} items={content.hero?.quickInfo} addLabel={t("admin.common.add")} onAdd={() => addItem(["hero", "quickInfo"], { icon: "football", label: { ar: "", en: "" }, value: { ar: "", en: "" } })}>
         {safeArray(content.hero?.quickInfo).map((item, index) => (
           <ItemShell key={index} title={`Item ${index + 1}`} onRemove={() => removeItem(["hero", "quickInfo"], index)}>
             <div className="grid gap-4 md:grid-cols-2">

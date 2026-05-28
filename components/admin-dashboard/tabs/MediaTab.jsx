@@ -12,7 +12,7 @@ export default function MediaTab({ content, update, addItem, removeItem, t }) {
         <LocalizedField label={t("admin.fields.mainTitle")} value={content.media?.title} onChange={(v) => update(["media", "title"], v)} />
       </div>
       <LocalizedTextArea label={t("admin.fields.shortDescription")} value={content.media?.summary} onChange={(v) => update(["media", "summary"], v)} />
-      <ArrayBox title={t("admin.sections.galleryImages")} items={content.media?.items} addLabel={t("admin.fields.image")} onAdd={() => addItem(["media", "items"], { image: "", alt: t("admin.fields.image") })}>
+      <ArrayBox title={t("admin.sections.galleryImages")} items={content.media?.items} addLabel={t("admin.fields.image")} onAdd={() => addItem(["media", "items"], { image: "", alt: { ar: "", en: "" } })}>
         {safeArray(content.media?.items).map((item, index) => (
           <ItemShell key={index} title={`${t("admin.fields.image")} ${index + 1}`} onRemove={() => removeItem(["media", "items"], index)}>
             <LocalizedField label={t("admin.fields.altText")} value={item.alt} onChange={(v) => update(["media", "items", index, "alt"], v)} />

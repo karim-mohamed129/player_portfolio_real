@@ -12,7 +12,7 @@ export default function CareerSection({ career }) {
         <div className="grid gap-5">
           {safeArray(career?.items).map((item, index) => (
             <article key={index} className="glass-card grid items-center gap-5 rounded-[2rem] p-5 md:grid-cols-[150px_110px_1fr]">
-              {item.image && <img src={item.image} alt={item.title} className="h-36 w-full rounded-3xl border border-white/15 object-cover md:h-28" />}
+              {item.image && <img src={item.image} alt={item.title || `${career?.title || "Career"} ${index + 1}`} className="site-image-cover h-36 rounded-3xl border border-white/15 md:h-28" loading="lazy" />}
               <div className="grid min-h-14 place-items-center rounded-2xl bg-gradient-to-br from-danger to-grass text-xl font-black">{item.year}</div>
               <div>
                 <h3 className="mb-2 text-xl font-black">{item.title}</h3>

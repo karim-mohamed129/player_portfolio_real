@@ -9,6 +9,9 @@ export const dynamic = "force-dynamic";
 
 const SAFE_IMAGE_EXTENSIONS = /\.(jpg|jpeg|png|gif|webp|avif|bmp|ico)$/i;
 const PDF_EXTENSIONS = /\.pdf$/i;
+const MAX_IMAGE_UPLOAD_BYTES = 10 * 1024 * 1024;
+const MAX_PDF_UPLOAD_BYTES = 12 * 1024 * 1024;
+const MAX_MULTIPART_OVERHEAD_BYTES = 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = new Set([
   "image/jpeg",
   "image/png",
@@ -55,8 +58,9 @@ export async function POST(request) {
 
   try {
     const contentLength = Number(request.headers.get("content-length") || 0);
-    if (contentLength && contentLength > 13 * 1024 * 1024) {
-      return NextResponse.json({ error: "حجم الملف كبير جداً." }, { status: 413 });
+    const maxRequestSize = MAX_PDF_UPLOAD_BYTES + MAX_MULTIPART_OVERHEAD_BYTES;
+    if (contentLength && contentLength > maxRequestSize) {
+      return NextResponse.json({ error: "حجم الطلب كبير جداً. الحد الأقصى للصور 10 ميجابايت." }, { status: 413 });
     }
 
     const formData = await request.formData();
@@ -81,9 +85,9 @@ export async function POST(request) {
       return NextResponse.json({ error: "Only safe image formats or PDF uploads are allowed." }, { status: 400 });
     }
 
-    const maxSize = isPdf ? 12 * 1024 * 1024 : 8 * 1024 * 1024;
+    const maxSize = isPdf ? MAX_PDF_UPLOAD_BYTES : MAX_IMAGE_UPLOAD_BYTES;
     if (file.size > maxSize) {
-      return NextResponse.json({ error: isPdf ? "حجم ملف PDF كبير جداً. الحد الأقصى 12 ميجابايت." : "حجم الصورة كبير جداً. الحد الأقصى 8 ميجابايت." }, { status: 400 });
+      return NextResponse.json({ error: isPdf ? "حجم ملف PDF كبير جداً. الحد الأقصى 12 ميجابايت." : "حجم الصورة كبير جداً. الحد الأقصى 10 ميجابايت." }, { status: 413 });
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());

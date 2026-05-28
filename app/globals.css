@@ -187,9 +187,26 @@ html[dir="rtl"] .hero-overlay {
   background: var(--hero-fade);
 }
 
+
+.site-image-cover {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  object-fit: cover;
+  object-position: center center;
+  transform: none !important;
+}
+
+.site-image-cover--player {
+  object-fit: contain !important;
+  object-position: center center;
+  background: #fff;
+}
+
 .hero-photo-card {
   border-color: var(--line);
   background: var(--surface-contrast);
+  transform: none !important;
 }
 
 .hero-status-card {

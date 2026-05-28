@@ -20,6 +20,9 @@ const noStoreHeaders = [
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  experimental: {
+    proxyClientMaxBodySize: "14mb"
+  },
   async headers() {
     return [
       {

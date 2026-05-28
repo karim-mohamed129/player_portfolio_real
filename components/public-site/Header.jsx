@@ -25,7 +25,7 @@ export default function Header({ site, nav }) {
         <a href="#home" className="inline-flex min-w-0 items-center gap-3 text-xl font-black tracking-wide">
           {site?.logoImage ? (
             <span className="inline-grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-2xl bg-gradient-to-br from-danger to-gold p-1 shadow-lg shadow-red-950/30">
-              <img src={site.logoImage} alt={site?.logoText || "logo"} className="h-full w-full rounded-xl object-contain" />
+              <img src={site.logoImage} alt={site?.logoText ? `${site.logoText} logo` : "Website logo"} className="h-full w-full rounded-xl object-contain" />
             </span>
           ) : (
             <IconCircle icon={site?.logoIcon || "football"} className="h-11 w-11 shrink-0 text-lg" />
