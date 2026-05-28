@@ -50,12 +50,12 @@ export default function HeroSection({ hero }) {
         </div>
         <aside>
           <div className="hero-photo-card relative overflow-hidden rounded-[2.25rem] border shadow-glass">
-            <div className="flex h-[430px] items-center justify-center bg-black/20 p-3 md:h-[580px]">
+            <div className="flex h-[430px] items-center justify-center bg-black/20 md:h-[580px]">
               <img
                 key={playerImage}
                 src={playerImage}
                 alt={playerAlt}
-                className="h-full w-full object-contain object-center"
+                className="h-full w-full object-cover object-center"
                 loading="eager"
                 fetchPriority="high"
                 decoding="async"
@@ -75,4 +75,4 @@ export default function HeroSection({ hero }) {
       </div>
     </section>
   );
-}
+}    
