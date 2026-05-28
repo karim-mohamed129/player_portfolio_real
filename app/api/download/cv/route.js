@@ -1,24 +1,59 @@
 import { NextResponse } from "next/server";
 import { getPublicContent } from "@/lib/content";
 import { isSafeCloudinaryPdfUrl, safeErrorResponse } from "@/lib/security";
+import { defaultEnglishContent } from "@/lib/i18nContent";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-function normalizePlayerName(value = "") {
-  return String(value || "player")
+function hasEnglishLetters(value = "") {
+  return /[A-Za-z]/.test(String(value || ""));
+}
+
+function getEnglishPlayerName(value) {
+  const fallbackName = defaultEnglishContent?.hero?.name || "player";
+
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    const englishName = String(value.en || "").trim();
+    return hasEnglishLetters(englishName) ? englishName : fallbackName;
+  }
+
+  const plainName = String(value || "").trim();
+  return hasEnglishLetters(plainName) ? plainName : fallbackName;
+}
+
+function normalizeFileBaseName(value = "", fallback = "player") {
+  const cleaned = String(value || fallback)
+    .normalize("NFKC")
+    .replace(/[\\/:*?"<>|;]+/g, " ")
+    .replace(/[\u0000-\u001F\u007F]/g, "")
+    .replace(/\s+/g, " ")
     .trim()
-    .replace(/[\\/:*?"<>|]+/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "") || "player";
+    .slice(0, 120);
+
+  return cleaned || fallback;
+}
+
+function toAsciiFileName(value, fallback = "player CV.pdf") {
+  const ascii = String(value || "")
+    .normalize("NFKD")
+    .replace(/[^\x20-\x7E]/g, "")
+    .replace(/[\\/:*?"<>|;]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return ascii || fallback;
 }
 
 function buildContentDispositionHeader(playerName, disposition = "attachment") {
-  const safeName = `${normalizePlayerName(playerName)}-CV.pdf`;
+  const englishPlayerName = getEnglishPlayerName(playerName);
+  const fileBaseName = normalizeFileBaseName(englishPlayerName, "player");
+  const safeName = `${fileBaseName} CV.pdf`;
+  const asciiName = toAsciiFileName(safeName);
   const encodedName = encodeURIComponent(safeName);
   const safeDisposition = disposition === "inline" ? "inline" : "attachment";
-  return `${safeDisposition}; filename="player-CV.pdf"; filename*=UTF-8''${encodedName}`;
+
+  return `${safeDisposition}; filename="${asciiName}"; filename*=UTF-8''${encodedName}`;
 }
 
 function resolveCvUrl(cvUrl, requestUrl) {
